@@ -1,3 +1,35 @@
+## Live Helper Chat
+
+Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files.
+
+This allows two apps to work independently and have independent commit history.
+
+```shell script
+git clone https://github.com/LiveHelperChat/livehelperchat_laravel.git
+cd livehelperchat_laravel
+git clone https://github.com/LiveHelperChat/livehelperchat.git
+ln -s livehelperchat/lhc_web/ezcomponents
+ln -s livehelperchat/lhc_web/lib
+ln -s livehelperchat/lhc_web/modules
+ln -s livehelperchat/lhc_web/pos
+ln -s livehelperchat/lhc_web/extension
+ln -s livehelperchat/lhc_web/design
+ln -s livehelperchat/lhc_web/translations
+cp livehelperchat/lhc_web/index.php index_legacy.php
+cp livehelperchat/lhc_web/cron.php cron.php
+ln -s livehelperchat/lhc_web/var
+ln -s livehelperchat/lhc_web/settings
+ln -s livehelperchat/lhc_web/cache
+```
+
+Now you can point your browser to root folder if closed repository E.g `livehelperchat_laravel/index.php`
+
+After install don't forget to edit `.env` file and put database logins.
+
+Now in any extension or core file you should be able to use any Laravel class.
+
+## Laravel
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
