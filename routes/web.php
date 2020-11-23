@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\LegacyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::any('/dummy', [LegacyController::class, 'index'])->name( 'lhc.start_me');
+
+/*Route::get('/', function () {
     return view('welcome');
-});
+});*/

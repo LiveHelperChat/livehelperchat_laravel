@@ -175,6 +175,11 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Live Helper Chat providers
+         */
+        App\Providers\LiveHelperChatServiceProvider::class,
+
     ],
 
     /*
