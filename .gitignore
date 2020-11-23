@@ -10,3 +10,18 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+
+# Ignore Live Helper Chat files
+/var
+/translations
+/ezcomponents
+/design
+/cron.php
+/index_legacy.php
+/cache
+/extension
+/lib
+/livehelperchat
+/modules
+/pos
+/settings
