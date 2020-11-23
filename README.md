@@ -24,6 +24,8 @@ ln -s livehelperchat/lhc_web/cache
 
 Now you can point your browser to root folder if closed repository E.g `livehelperchat_laravel/index.php`
 
+You now might need to follow standard Laravel install procedure.
+
 After install don't forget to edit `.env` file and put database logins.
 
 Now in any extension or core file you should be able to use any Laravel class.
