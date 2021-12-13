@@ -1,6 +1,6 @@
 ## Live Helper Chat
 
-Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files.
+Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files. There is also a video tutorial how to setup it https://youtu.be/SeYA7Vpy4KU
 
 This allows two apps to work independently and have independent commit history.
 
