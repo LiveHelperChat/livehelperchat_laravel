@@ -20,6 +20,11 @@ Install instructions after cloning this repository. Here we just create a symlin
 
 This allows two apps to work independently and have independent commit history.
 
+For the most common Live Helper Chat classes read 
+
+ * https://doc.livehelperchat.com/docs/development/orm to work with LHC database most common methods
+ * https://doc.livehelperchat.com/docs/development/common-classes the most commit LHC classes
+
 ```shell script
 git clone https://github.com/LiveHelperChat/livehelperchat_laravel.git
 cd livehelperchat_laravel/public
