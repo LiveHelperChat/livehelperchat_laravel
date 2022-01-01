@@ -1,12 +1,18 @@
 ## Live Helper Chat
 
-Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files. There is also a video tutorial how to setup it https://youtu.be/SeYA7Vpy4KU
+Version of integration **V2**
+
+Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files. 
+
+* V2 - Video tutorial - pending
+* V1 - There is also a video tutorial how to setup it https://youtu.be/SeYA7Vpy4KU
+  * The only different that root directly now follows Laravel practise and is located in public folder. Adjusted shell commands also
 
 This allows two apps to work independently and have independent commit history.
 
 ```shell script
 git clone https://github.com/LiveHelperChat/livehelperchat_laravel.git
-cd livehelperchat_laravel
+cd livehelperchat_laravel/public
 git clone https://github.com/LiveHelperChat/livehelperchat.git
 ln -s livehelperchat/lhc_web/ezcomponents
 ln -s livehelperchat/lhc_web/lib
@@ -20,9 +26,18 @@ cp livehelperchat/lhc_web/cron.php cron.php
 ln -s livehelperchat/lhc_web/var
 ln -s livehelperchat/lhc_web/settings
 ln -s livehelperchat/lhc_web/cache
+chown apache:apache -R cache/
+chown apache:apache -R var/
+chown apache:apache settings/
+chmod -R 755 cache/
 ```
 
-Now you can point your browser to root folder if closed repository E.g `livehelperchat_laravel/index.php`
+Folder structure at the end should look like
+
+![See image](https://raw.githubusercontent.com/LiveHelperChat/livehelperchat_laravel/master/public/structure.png)
+
+
+Your have to setup virtual host on your server pointing to `livehelperchat_laravel/public` same as default laravel installation
 
 You now might need to follow standard Laravel install procedure.
 

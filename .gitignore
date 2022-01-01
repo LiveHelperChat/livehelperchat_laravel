@@ -13,19 +13,18 @@ npm-debug.log
 yarn-error.log
 
 # Ignore Live Helper Chat files
-/var
-/translations
-/ezcomponents
-/design
-/cron.php
-/index_legacy.php
-/cache
-/extension
-/lib
-/livehelperchat
-/modules
-/pos
-/settings
-/.idea
-/.vscode
+/public/cache
+/public/cron.php
+/public/design
+/public/extension
+/public/ezcomponents
+/public/index_legacy.php
+/public/lib
+/public/livehelperchat
+/public/modules
+/public/pos
+/public/settings
+/public/translations
+/public/var
+
 
