@@ -35,6 +35,33 @@ require __DIR__.'/../vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
+| Live Helper Chat classes Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| this application. We just need to utilize it! We'll simply require it
+| into the script here so we don't need to manually load our classes.
+|
+*/
+
+// Legacy index_legacy.php checks for that constant
+define('LHC_AUTOLOADED', true);
+
+require_once "ezcomponents/Base/src/base.php"; // dependent on installation method, see below
+
+ezcBase::addClassRepository( './','./lib/autoloads');
+
+spl_autoload_register(array('ezcBase','autoload'), true, false);
+spl_autoload_register(array('erLhcoreClassSystem','autoload'), true, false);
+
+// your code here
+ezcBaseInit::setCallback(
+    'ezcInitDatabaseInstance',
+    'erLhcoreClassLazyDatabaseConfiguration'
+);
+
+/*
+|--------------------------------------------------------------------------
 | Run The Application
 |--------------------------------------------------------------------------
 |

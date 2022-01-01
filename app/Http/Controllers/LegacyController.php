@@ -9,4 +9,9 @@ class LegacyController extends Controller
         return view('welcome');
     }
 
+    public function anonymous()
+    {
+        return view('samples/anonymous');
+    }
+
 }

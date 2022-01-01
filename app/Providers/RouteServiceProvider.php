@@ -43,9 +43,21 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
+            // Logged without site_admin
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
+            // Logged with site_admin
+            Route::middleware('web')
+                ->namespace($this->namespace . '\Admin')
+                ->prefix('site_admin')
+                ->group(base_path('routes/admin.php'));
+
+            // Anonymous
+            Route::middleware('anonymous')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/anonymous.php'));
         });
     }
 

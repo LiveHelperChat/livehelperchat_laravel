@@ -2,6 +2,16 @@
 
 Version of integration **V2**
 
+* Sample URL's which are handled by Laravel, but are using LHC classes
+  * `https://example.com/site_admin/logged` - this routes requires `lhfront`,`default` permissions. Modify it for production to avoid printing user details
+  * `https://example.com/anonymous` - this route does not require any permission and does not set any cookie.
+  * `https://example.com/site_admin/login` - this route shows how to redirect to LHC internal URL even if URL route is registered in Laravel.
+
+Now you can use any LHC class within Laravel routes. Where this option was missing in first version.
+
+* `site_admin` routes should be defined in `routes/admin.php` you will find also sample how to require permissions for specific URL.
+* Cookieless routes should be defined in `routes/anonymous.php` route file.
+
 Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files. 
 
 * V2 - Video tutorial - pending
@@ -21,8 +31,6 @@ ln -s livehelperchat/lhc_web/pos
 ln -s livehelperchat/lhc_web/extension
 ln -s livehelperchat/lhc_web/design
 ln -s livehelperchat/lhc_web/translations
-cp livehelperchat/lhc_web/index.php index_legacy.php
-cp livehelperchat/lhc_web/cron.php cron.php
 ln -s livehelperchat/lhc_web/var
 ln -s livehelperchat/lhc_web/settings
 ln -s livehelperchat/lhc_web/cache
@@ -36,14 +44,13 @@ Folder structure at the end should look like
 
 ![See image](https://raw.githubusercontent.com/LiveHelperChat/livehelperchat_laravel/master/public/structure.png)
 
-
 Your have to setup virtual host on your server pointing to `livehelperchat_laravel/public` same as default laravel installation
 
 You now might need to follow standard Laravel install procedure.
 
 After install don't forget to edit `.env` file and put database logins.
 
-Now in any extension or core file you should be able to use any Laravel class.
+Now in any extension or core file you should be able to use any Laravel class and vica versa.
 
 ## Laravel
 

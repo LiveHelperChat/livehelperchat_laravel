@@ -40,7 +40,10 @@ class Handler extends ExceptionHandler
     }
 
     public function render( $request, Throwable $e) {
-        if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+        if (
+            $e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException ||
+            $e instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
+        ) {
             // pass to legacy framework
             \App::make("LiveHelperChat");
             die(); // prevent Laravel sending a 404 response
