@@ -3,12 +3,19 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Helpers\AppHelper;
+use App\Services\PermissionService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class LiveHelperChat
 {
+    protected PermissionService $permissionService;
+
+    public function __construct(PermissionService $permissionService)
+    {
+        $this->permissionService = $permissionService;
+    }
+
     /**
      * Handle an incoming request.
      *
@@ -18,13 +25,18 @@ class LiveHelperChat
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!AppHelper::instance()->auth()->isLogged()) {
+        $user = $this->permissionService->auth();
+
+        if (!$user->isLogged()) {
             return redirect()->route('lhc_admin.login');
         }
 
-        if (AppHelper::instance()->accessible($request) !== true) {
+        if (!$this->permissionService->checkAccess($request)) {
             throw new AccessDeniedHttpException();
         }
+
+        // Bind the authenticated user to the container for dependency injection
+        app()->instance(\erLhcoreClassUser::class, $user);
 
         return $next($request);
     }

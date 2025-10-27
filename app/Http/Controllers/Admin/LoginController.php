@@ -6,10 +6,17 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Http\Controllers\Controller as Controller;
-use App\Helpers\AppHelper;
+use App\Services\PermissionService;
 
 class LoginController extends Controller
 {
+    protected PermissionService $permissionService;
+
+    public function __construct(PermissionService $permissionService)
+    {
+        $this->permissionService = $permissionService;
+    }
+
     public function index()
     {
         return view('welcome');
@@ -22,10 +29,10 @@ class LoginController extends Controller
         throw new \Symfony\Component\HttpKernel\Exception\NotFoundHttpException();
     }
 
-    public function logged()
+    public function logged(\erLhcoreClassUser $user)
     {
-        return view('samples/logged',[
-            'user' => AppHelper::instance()->auth(),
+        return view('samples/logged', [
+            'user' => $user,
             'items' => \erLhcoreClassModelChat::getList(['limit' => 1])
         ]);
     }
