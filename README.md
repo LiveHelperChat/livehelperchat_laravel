@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 ## Live Helper Chat
 
-Version of integration **V2**
+Version of integration **V3** Upgraded to Laravel 12.x version.
 
 * Sample URL's which are handled by Laravel, but are using LHC classes
   * `https://example.com/site_admin/logged` - this routes requires `lhfront`,`default` permissions. Modify it for production to avoid printing user details
@@ -15,7 +14,8 @@ Now you can use any LHC class within Laravel routes. Where this option was missi
 
 Install instructions after cloning this repository. Here we just create a symlinks to original live helper chat files. 
 
-* V2 - Video tutorial - pending
+* V3 - Similar setup as V1
+* V2 - Similar setup as V2
 * V1 - There is also a video tutorial how to setup it https://youtu.be/SeYA7Vpy4KU
   * The only different that root directly now follows Laravel practise and is located in public folder. Adjusted shell commands also
 
@@ -60,10 +60,8 @@ Now in any extension or core file you should be able to use any Laravel class an
 
 ## Laravel
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
-=======
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
->>>>>>> 6fc2c6dca34a1fa80dacf0ad20d7eef6e7ad9ebd
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>

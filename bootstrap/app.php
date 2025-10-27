@@ -24,13 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Global middleware - HandleCors is built-in to Laravel 12
+        // Global middleware - include Laravel defaults for secure request handling
         $middleware->use([
+            \Illuminate\Http\Middleware\HandleCors::class,
+            \App\Http\Middleware\TrustHosts::class,
             \App\Http\Middleware\TrustProxies::class,
             \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
             \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
             \App\Http\Middleware\TrimStrings::class,
             \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+            \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
         ]);
 
         // Web middleware group
@@ -49,9 +52,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // API middleware group
-        $middleware->api(append: [
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        ]);
+        $middleware->api(
+            prepend: ['throttle:api'],
+            append: [
+                \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            ],
+        );
 
         // Route middleware aliases
         $middleware->alias([
