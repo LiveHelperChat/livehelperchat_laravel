@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LegacyController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,4 +13,9 @@ use App\Http\Controllers\LegacyController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::any('/dummy', [LegacyController::class, 'index'])->name( 'lhc.start_me');
+
+Route::any('/dummy', [LegacyController::class, 'index'])->name('lhc.start_me');
+
+Route::get('/', function () {
+    return view('welcome');
+});
