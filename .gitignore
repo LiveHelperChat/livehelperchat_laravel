@@ -26,7 +26,6 @@ Thumbs.db
 # Ignore Live Helper Chat files
 
 /public/cache
-/public/cron.php
 /public/design
 /public/extension
 /public/ezcomponents
