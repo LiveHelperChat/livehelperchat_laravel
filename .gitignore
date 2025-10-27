@@ -21,11 +21,10 @@
 /vendor
 Homestead.json
 Homestead.yaml
-<<<<<<< HEAD
-npm-debug.log
-yarn-error.log
+Thumbs.db
 
 # Ignore Live Helper Chat files
+
 /public/cache
 /public/cron.php
 /public/design
@@ -39,7 +38,3 @@ yarn-error.log
 /public/translations
 /public/var
 
-
-=======
-Thumbs.db
->>>>>>> 6fc2c6dca34a1fa80dacf0ad20d7eef6e7ad9ebd

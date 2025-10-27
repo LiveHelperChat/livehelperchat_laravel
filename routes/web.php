@@ -16,6 +16,6 @@ use App\Http\Controllers\LegacyController;
 
 Route::any('/dummy', [LegacyController::class, 'index'])->name('lhc.start_me');
 
-Route::get('/', function () {
+/* Route::get('/', function () {
     return view('welcome');
-});
+});*/
