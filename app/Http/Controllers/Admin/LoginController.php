@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Http\Controllers\Controller as Controller;
+use App\Helpers\AppHelper;
 
 class LoginController extends Controller
 {
@@ -24,7 +25,7 @@ class LoginController extends Controller
     public function logged()
     {
         return view('samples/logged',[
-            'user' => \AppHelper::instance()->auth(),
+            'user' => AppHelper::instance()->auth(),
             'items' => \erLhcoreClassModelChat::getList(['limit' => 1])
         ]);
     }

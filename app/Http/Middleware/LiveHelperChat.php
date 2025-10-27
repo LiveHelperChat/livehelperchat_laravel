@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Helpers\AppHelper;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -17,11 +18,11 @@ class LiveHelperChat
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!\AppHelper::instance()->auth()->isLogged()) {
+        if (!AppHelper::instance()->auth()->isLogged()) {
             return redirect()->route('lhc_admin.login');
         }
 
-        if (\AppHelper::instance()->accessible($request) !== true) {
+        if (AppHelper::instance()->accessible($request) !== true) {
             throw new AccessDeniedHttpException();
         }
 
