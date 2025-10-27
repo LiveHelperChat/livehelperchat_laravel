@@ -1,0 +1,3 @@
+# Example Request class
+# Create your Form Request classes in this directory
+# Example: php artisan make:request LoginRequest

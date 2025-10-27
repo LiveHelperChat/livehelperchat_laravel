@@ -6,6 +6,7 @@ Version of integration **V3** Upgraded to Laravel 12.x version.
   * `https://example.com/site_admin/logged` - this routes requires `lhfront`,`default` permissions. Modify it for production to avoid printing user details
   * `https://example.com/anonymous` - this route does not require any permission and does not set any cookie.
   * `https://example.com/site_admin/login` - this route shows how to redirect to LHC internal URL even if URL route is registered in Laravel.
+  * `https://example.com/dummy` - default laravel welcome screen
 
 Now you can use any LHC class within Laravel routes. Where this option was missing in first version.
 

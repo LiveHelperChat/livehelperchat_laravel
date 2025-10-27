@@ -1,0 +1,21 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+        - bootstrap/app.php
+
+    # Level 9 is the highest level
+    level: 6
+
+    ignoreErrors:
+        # Ignore legacy framework integration errors
+        - '#Call to method .* on an unknown class \\erLhcore.*#'
+        - '#Access to undefined constant \\App::.*#'
+
+    excludePaths:
+        - app/Helpers/AppHelper.php
+
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

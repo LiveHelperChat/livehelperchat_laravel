@@ -75,15 +75,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         // Handle 404 and MethodNotAllowed exceptions by passing to legacy framework
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
-            // pass to legacy framework
+            // Pass to legacy framework
             \App::make("LiveHelperChat");
-            die(); // prevent Laravel sending a 404 response
+            
+
+            // Return a proper response instead of die()
+            return response('', 200);
         });
         
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException $e, $request) {
-            // pass to legacy framework
+            // Pass to legacy framework
             \App::make("LiveHelperChat");
-            die(); // prevent Laravel sending a 404 response
+
+            // Return a proper response instead of die()
+            return response('', 200);
         });
         
         // Don't flash sensitive fields in validation exceptions

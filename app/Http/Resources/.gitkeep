@@ -1,0 +1,3 @@
+# Example Resource class
+# Create your API Resource classes in this directory
+# Example: php artisan make:resource UserResource
