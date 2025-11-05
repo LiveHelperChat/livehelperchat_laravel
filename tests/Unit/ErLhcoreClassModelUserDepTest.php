@@ -25,8 +25,6 @@ class ErLhcoreClassModelUserDepTest extends LegacyTestCase
      */
     public function test_get_online_operators_with_list_all_permission()
     {
-        var_dump(getcwd());
-
         // Mock the current user using the reusable method from LegacyTestCase
         $currentUser = $this->createMockUser();
 
