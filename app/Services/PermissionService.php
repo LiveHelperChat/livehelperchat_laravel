@@ -12,7 +12,7 @@ class PermissionService
     public function checkAccess(Request $request): bool
     {
         $required = $request->route()->getAction();
-
+        
         if (isset($required['permission']['m'], $required['permission']['f'])) {
             return \erLhcoreClassUser::instance()
                 ->hasAccessTo($required['permission']['m'], $required['permission']['f']);
