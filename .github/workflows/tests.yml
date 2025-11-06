@@ -87,7 +87,6 @@ jobs:
       - name: Configure database connection
         run: |
           php artisan config:clear
-          php artisan cache:clear
         env:
           DB_CONNECTION: mysql
           DB_HOST: 127.0.0.1
