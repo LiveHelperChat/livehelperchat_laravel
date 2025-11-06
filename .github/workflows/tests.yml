@@ -8,6 +8,13 @@ on:
   pull_request:
   schedule:
     - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      sql_file_path:
+        description: 'Path to SQL file to import'
+        required: false
+        default: 'database/schema.sql'
+        type: string
 
 permissions:
   contents: read
@@ -15,6 +22,16 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     strategy:
       fail-fast: true
@@ -27,11 +44,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Clone LiveHelperChat repository
+        run: |
+          cd public
+          git clone --depth 1 https://github.com/LiveHelperChat/livehelperchat.git
+
+      - name: Create symlinks in public folder
+        run: |
+          cd public
+          ln -s livehelperchat/lhc_web/cache cache
+          ln -s livehelperchat/lhc_web/design design
+          ln -s livehelperchat/lhc_web/extension extension
+          ln -s livehelperchat/lhc_web/ezcomponents ezcomponents
+          ln -s livehelperchat/lhc_web/lib lib
+          ln -s livehelperchat/lhc_web/modules modules
+          ln -s livehelperchat/lhc_web/pos pos
+          ln -s livehelperchat/lhc_web/settings settings
+          ln -s livehelperchat/lhc_web/translations translations
+          ln -s livehelperchat/lhc_web/var var
+
+      - name: Copy settings configuration
+        run: |
+          cd public/settings
+          cp settings.ini.default.php settings.ini.php
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, pdo_mysql, mysqli
           coverage: none
 
       - name: Install Composer dependencies
@@ -43,5 +84,50 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate
 
+      - name: Configure database connection
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: password
+
+      - name: Import SQL database
+        run: |
+          mysql -h 127.0.0.1 -u root -ppassword testing < ${{ github.event.inputs.sql_file_path || 'database/schema.sql' }}
+
+      - name: Run migrations
+        run: php artisan migrate --force
+        env:
+          LHC_DB_CONNECTION: mysql
+          LHC_DB_HOST: 127.0.0.1
+          LHC_DB_PORT: 3306
+          LHC_DB_DATABASE: testing
+          LHC_DB_USERNAME: root
+          LHC_DB_PASSWORD: password
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: password
+
       - name: Execute tests
         run: php artisan test
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: testing
+          DB_USERNAME: root
+          DB_PASSWORD: password
+          LHC_DB_CONNECTION: mysql
+          LHC_DB_HOST: 127.0.0.1
+          LHC_DB_PORT: 3306
+          LHC_DB_DATABASE: testing
+          LHC_DB_USERNAME: root
+          LHC_DB_PASSWORD: password
