@@ -8,6 +8,8 @@ on:
   pull_request:
   schedule:
     - cron: '0 0 * * *'
+  repository_dispatch:
+    types: [livehelperchat-push]
   workflow_dispatch:
     inputs:
       sql_file_path:
