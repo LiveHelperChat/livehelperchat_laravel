@@ -731,12 +731,13 @@ CREATE TABLE `lh_abstract_msg_protection` (
                                               `has_dep` tinyint(1) unsigned NOT NULL DEFAULT 0,
                                               `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
                                               `dep_ids` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                                              `languages` text COLLATE utf8mb4_unicode_ci NOT NULL,
                                               PRIMARY KEY (`id`),
                                               KEY `enabled_type` (`enabled`,`rule_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `lh_abstract_msg_protection` ( `pattern`, `enabled`, `remove`, `v_warning`, `rule_type`, `has_dep`, `name`, `dep_ids`) VALUES
-(	'[{\"type\":\"pii\",\"entities\":[\"EMAIL_ADDRESS\",\"CREDIT_CARD\",\"IBAN_CODE\",\"IP_ADDRESS\"]},{\"type\":\"urls\",\"allowedSchemes\":[\"https\"],\"blockUserinfo\":true,\"allowSubdomains\":false,\"allowList\":[\"example.com\"]},{\"type\":\"secret_keys\",\"threshold\":\"balanced\"}]',	1,	0,	'[html]<div class=\"fs14 text-danger fw-bold fst-italic\">For your protection, we ask that you do not share full credit numbers unless speaking directly with a processing agent.</div>[/html]',	2,	1,	'Visitor to operator',	'[1,28,20]');
+INSERT INTO `lh_abstract_msg_protection` (`id`, `pattern`, `enabled`, `remove`, `v_warning`, `rule_type`, `has_dep`, `name`, `dep_ids`, `languages`) VALUES
+    (1,	'[{\"type\":\"pii\",\"entities\":[\"EMAIL_ADDRESS\",\"CREDIT_CARD\",\"IBAN_CODE\",\"IP_ADDRESS\"]},{\"type\":\"urls\",\"allowedSchemes\":[\"https\"],\"blockUserinfo\":true,\"allowSubdomains\":false,\"allowList\":[\"example.com\"]},{\"type\":\"secret_keys\",\"threshold\":\"balanced\"}]',	1,	0,	'[html]<div class=\"fs14 text-danger fw-bold fst-italic\">For your protection, we ask that you do not share full credit numbers unless speaking directly with a processing agent.</div>[/html]',	2,	1,	'Visitor to operator',	'[1,28,20]',	'');
 
 DROP TABLE IF EXISTS `lh_abstract_proactive_chat_campaign`;
 CREATE TABLE `lh_abstract_proactive_chat_campaign` (
