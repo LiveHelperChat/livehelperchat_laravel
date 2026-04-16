@@ -120,7 +120,7 @@ jobs:
       - name: Update database from production
         run: |
           cd public
-          php cron.php -s site_admin -c cron/util/update_database -p local
+          php cron.php -s site_admin -c cron/util/update_database
 
       - name: Execute tests
         run: php artisan test
