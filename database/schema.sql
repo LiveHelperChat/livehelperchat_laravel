@@ -2627,6 +2627,50 @@ INSERT INTO `lh_msg` (`id`, `msg`, `meta_msg`, `time`, `chat_id`, `user_id`, `na
 (16,	'Admin User has accepted the chat!',	'{\"content\":{\"accept_action\":{\"puser_id\":0,\"ol\":[\"click\"],\"user_id\":1,\"name_support\":\"Admin User\"}}}',	1761576421,	5,	-1,	'Admin User',	0),
 (17,	'Dfgdsfg',	'',	1761576423,	5,	1,	'Admin User',	3);
 
+INSERT INTO `lh_msg` (`id`, `msg`, `time`, `chat_id`, `user_id`, `name_support`, `meta_msg`, `del_st`) VALUES
+(2925802,	'admin has closed the chat!',	1776323018,	1647604361,	-1,	'admin',	'',	0),
+(2925801,	'nice',	1776323010,	1647604361,	0,	'',	'',	3),
+(2925800,	'Ok, let me see',	1776323006,	1647604361,	1,	'admin',	'',	3),
+(2925799,	'I need some bits',	1776322998,	1647604361,	0,	'',	'',	3),
+(2925798,	'How can I help you',	1776322985,	1647604361,	1,	'admin',	'',	3),
+(2925797,	'Auto send',	1776322977,	1647604361,	1,	'admin',	'{\"content\":{\"auto_responder\":true,\"auto_send\":true}}',	3),
+(2925796,	'admin has accepted the chat!',	1776322977,	1647604361,	-1,	'admin',	'{\"content\":{\"accept_action\":{\"puser_id\":0,\"ol\":[\"click\",\"start_chat_by_id\",\"click\"],\"user_id\":1,\"name_support\":\"admin\"}}}',	0);
+
+INSERT INTO `lh_chat` (`id`, `nick`, `status`, `time`, `user_id`, `hash`, `referrer`, `ip`, `dep_id`, `user_status`, `support_informed`, `email`, `country_code`, `country_name`, `user_typing`, `operator_typing`, `phone`, `has_unread_messages`, `last_user_msg_time`, `last_msg_id`, `additional_data`, `mail_send`, `lat`, `lon`, `city`, `session_referrer`, `wait_time`, `chat_duration`, `chat_variables`, `priority`, `user_typing_txt`, `chat_initiator`, `online_user_id`, `transfer_timeout_ts`, `transfer_timeout_ac`, `transfer_if_na`, `na_cb_executed`, `fbst`, `nc_cb_executed`, `operator_typing_id`, `remarks`, `status_sub`, `operation`, `screenshot_id`, `operation_admin`, `unread_messages_informed`, `reinform_timeout`, `tslasign`, `user_tz_identifier`, `user_closed_ts`, `chat_locale`, `chat_locale_to`, `unanswered_chat`, `product_id`, `last_op_msg_time`, `has_unread_op_messages`, `unread_op_messages_informed`, `status_sub_sub`, `status_sub_arg`, `uagent`, `device_type`, `sender_user_id`, `auto_responder_id`, `lsync`, `usaccept`, `transfer_uid`, `pnd_time`, `cls_time`, `invitation_id`, `anonymized`, `gbot_id`, `cls_us`, `iwh_id`, `theme_id`, `frt`, `aart`, `mart`) VALUES
+(1647604361,	'gml',	2,	1776322970,	1,	'OFrUwEt88pIlz2se5DiBQzSz2pQp9viFBFbop7mr',	'//qu.lt/testpages/vars.html',	'192.168.1.1',	10,	0,	1,	'',	'',	'',	0,	0,	'',	0,	1776323018,	2925801,	'',	0,	'0',	'0',	'',	'',	7,	33,	'{\"gid\":\"bfged3crtc2375splo7jfjeu15\"}',	0,	'ni',	0,	156449846,	1776322970,	20,	1,	0,	0,	1,	0,	'',	0,	'',	0,	'',	0,	0,	0,	'Europe/Vilnius',	0,	'en-US',	'',	0,	0,	1776323006,	0,	0,	0,	'',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',	0,	0,	0,	1776323010,	0,	0,	1776322970,	1776323018,	0,	0,	0,	1,	0,	0,	8,	8,	8);
+
+
+
+INSERT INTO `lh_chat` (`id`, `nick`, `status`, `time`, `user_id`, `hash`, `referrer`, `ip`, `dep_id`, `user_status`, `support_informed`, `email`, `country_code`, `country_name`, `user_typing`, `operator_typing`, `phone`, `has_unread_messages`, `last_user_msg_time`, `last_msg_id`, `additional_data`, `mail_send`, `lat`, `lon`, `city`, `session_referrer`, `wait_time`, `chat_duration`, `chat_variables`, `priority`, `user_typing_txt`, `chat_initiator`, `online_user_id`, `transfer_timeout_ts`, `transfer_timeout_ac`, `transfer_if_na`, `na_cb_executed`, `fbst`, `nc_cb_executed`, `operator_typing_id`, `remarks`, `status_sub`, `operation`, `screenshot_id`, `operation_admin`, `unread_messages_informed`, `reinform_timeout`, `tslasign`, `user_tz_identifier`, `user_closed_ts`, `chat_locale`, `chat_locale_to`, `unanswered_chat`, `product_id`, `last_op_msg_time`, `has_unread_op_messages`, `unread_op_messages_informed`, `status_sub_sub`, `status_sub_arg`, `uagent`, `device_type`, `sender_user_id`, `auto_responder_id`, `lsync`, `usaccept`, `transfer_uid`, `pnd_time`, `cls_time`, `invitation_id`, `anonymized`, `gbot_id`, `cls_us`, `iwh_id`, `theme_id`, `frt`, `aart`, `mart`) VALUES
+(1647604360,	'gml',	2,	1776318766,	1,	'yHRLBP4rDuBX9gfVMjnMFIdvNbpjcOshB2VJrl9o',	'//qu.lt/testpages/vars.html',	'192.168.1.1',	10,	0,	1,	'',	'',	'',	0,	0,	'',	0,	1776319986,	2925791,	'',	0,	'0',	'0',	'',	'',	22,	36,	'{\"gid\":\"bfged3crtc2375splo7jfjeu15\"}',	0,	'Visitor two me',	0,	156449846,	1776318766,	20,	1,	0,	0,	1,	0,	'',	0,	'',	0,	'',	0,	0,	0,	'Europe/Vilnius',	1776319951,	'en-US',	'',	0,	0,	1776319973,	0,	0,	0,	'',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',	0,	0,	0,	1776319979,	0,	0,	1776318766,	1776319986,	0,	0,	0,	1,	0,	0,	24,	15,	24);
+
+
+INSERT INTO `lh_msg` (`id`, `msg`, `time`, `chat_id`, `user_id`, `name_support`, `meta_msg`, `del_st`) VALUES
+(2925784,	'admin has accepted the chat!',	1776318788,	1647604360,	-1,	'admin',	'{\"content\":{\"accept_action\":{\"puser_id\":0,\"ol\":[\"click\",\"start_chat_by_id\",\"click\"],\"user_id\":1,\"name_support\":\"admin\"}}}',	0),
+(2925785,	'Auto send',	1776318788,	1647604360,	1,	'admin',	'{\"content\":{\"auto_responder\":true,\"auto_send\":true}}',	3),
+(2925786,	'I need help with payment stufff',	1776318803,	1647604360,	0,	'',	'',	3),
+(2925787,	'Ok, let me look for that',	1776318812,	1647604360,	1,	'admin',	'',	3),
+(2925788,	'admin has closed the chat!',	1776318833,	1647604360,	-1,	'admin',	'',	0),
+(2925789,	'Visitor message',	1776319967,	1647604360,	0,	'',	'',	3),
+(2925790,	'Operator message',	1776319973,	1647604360,	1,	'admin',	'',	3),
+(2925791,	'Visitor two message',	1776319979,	1647604360,	0,	'',	'',	3),
+(2925792,	'admin has closed the chat!',	1776319986,	1647604360,	-1,	'admin',	'',	0);
+
+INSERT INTO `lh_chat` (`id`, `nick`, `status`, `time`, `user_id`, `hash`, `referrer`, `ip`, `dep_id`, `user_status`, `support_informed`, `email`, `country_code`, `country_name`, `user_typing`, `operator_typing`, `phone`, `has_unread_messages`, `last_user_msg_time`, `last_msg_id`, `additional_data`, `mail_send`, `lat`, `lon`, `city`, `session_referrer`, `wait_time`, `chat_duration`, `chat_variables`, `priority`, `user_typing_txt`, `chat_initiator`, `online_user_id`, `transfer_timeout_ts`, `transfer_timeout_ac`, `transfer_if_na`, `na_cb_executed`, `fbst`, `nc_cb_executed`, `operator_typing_id`, `remarks`, `status_sub`, `operation`, `screenshot_id`, `operation_admin`, `unread_messages_informed`, `reinform_timeout`, `tslasign`, `user_tz_identifier`, `user_closed_ts`, `chat_locale`, `chat_locale_to`, `unanswered_chat`, `product_id`, `last_op_msg_time`, `has_unread_op_messages`, `unread_op_messages_informed`, `status_sub_sub`, `status_sub_arg`, `uagent`, `device_type`, `sender_user_id`, `auto_responder_id`, `lsync`, `usaccept`, `transfer_uid`, `pnd_time`, `cls_time`, `invitation_id`, `anonymized`, `gbot_id`, `cls_us`, `iwh_id`, `theme_id`, `frt`, `aart`, `mart`) VALUES
+(1647604362,	'gml',	2,	1776330692,	1,	'ylnajagYOvOOiH84jV1f1KkEoMQYolZDjN95eiAE',	'//qu.lt/testpages/vars.html',	'192.168.1.1',	10,	0,	1,	'',	'',	'',	0,	0,	'',	0,	1776330750,	2925811,	'',	0,	'0',	'0',	'',	'',	25,	38,	'{\"gid\":\"bfged3crtc2375splo7jfjeu15\"}',	0,	'ok thank',	0,	156449846,	1776330692,	20,	1,	0,	0,	1,	0,	'',	0,	'',	0,	'',	0,	0,	0,	'Europe/Vilnius',	0,	'en-US',	'',	0,	0,	1776330745,	1,	0,	3,	'',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',	0,	0,	0,	1776330747,	0,	0,	1776330692,	1776330750,	0,	0,	0,	1,	0,	0,	7,	6,	7);
+
+INSERT INTO `lh_msg` (`id`, `msg`, `time`, `chat_id`, `user_id`, `name_support`, `meta_msg`, `del_st`) VALUES
+(2925803,	'Hi',	1776330707,	1647604362,	0,	'',	'',	3),
+(2925804,	'I need help with payment',	1776330712,	1647604362,	0,	'',	'',	3),
+(2925805,	'admin has accepted the chat!',	1776330717,	1647604362,	-1,	'admin',	'{\"content\":{\"accept_action\":{\"puser_id\":0,\"ol\":[\"click\",\"start_chat_by_id\",\"click\"],\"user_id\":1,\"name_support\":\"admin\"}}}',	0),
+(2925806,	'Auto send',	1776330717,	1647604362,	1,	'admin',	'{\"content\":{\"auto_responder\":true,\"auto_send\":true}}',	3),
+(2925807,	'What kindaof help you need',	1776330724,	1647604362,	1,	'admin',	'',	3),
+(2925808,	'various one',	1776330730,	1647604362,	0,	'',	'',	3),
+(2925809,	'What various one?',	1776330736,	1647604362,	1,	'admin',	'',	3),
+(2925810,	'ok thanks bye',	1776330741,	1647604362,	0,	'',	'',	3),
+(2925811,	'Bye',	1776330745,	1647604362,	1,	'admin',	'',	2),
+(2925812,	'admin has closed the chat!',	1776330750,	1647604362,	-1,	'admin',	'',	0);
+
 DROP TABLE IF EXISTS `lh_notification_op_subscriber`;
 CREATE TABLE `lh_notification_op_subscriber` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
