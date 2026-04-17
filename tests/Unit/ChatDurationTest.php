@@ -96,5 +96,29 @@ class ChatDurationTest extends LegacyTestCase
         $this->assertEquals('1 P_USER_ID -- 28 TTA -- 09:12:25 MSG_TIME', $log[13]);
         $this->assertEquals(38, $duration);
         $this->assertEquals($expectedLogMain, $logMain);
+
+
+        $log = [];
+        $logMain = [];
+        $chat = \erLhcoreClassModelChat::fetch(91238);
+        $duration = \LiveHelperChat\Helpers\ChatDuration::getChatDurationToUpdateChatID($chat, true, $log, $logMain);
+
+        $this->assertEquals([], $logMain);
+        $this->assertEquals([], $log);
+        $this->assertEquals($duration, 0);
+
+        $db = \ezcDbInstance::get();
+        $stmt = $db->prepare("SELECT user_id   FROM `lh_chat_participant` WHERE chat_id = :chat_id");
+        $stmt->bindValue(':chat_id',$chat->id);
+        $stmt->execute();
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals($result, array (
+            0 =>
+                array (
+                    'user_id' => 125,
+                ),
+        ));
+
     }
 }
