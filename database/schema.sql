@@ -2682,6 +2682,34 @@ INSERT INTO `lh_msg` (`id`, `msg`, `time`, `chat_id`, `user_id`, `name_support`,
                                                                                                            (1284001,	'[level=system-warning exit-visitor]Shpresa has closed the chat explicitly![/level] [button_action=send_manual_message]invite to chat[/button_action]',	1776443217,	91238,	-1,	'',	'',	0),
                                                                                                            (1284004,	'Chat was closed by cron because visitor left the active chat!',	1776443222,	91238,	-1,	'',	'{\"content\":{\"close_reason\":{\"reason\":\"autoclose_activity_timeout\",\"delay\":\"20,30,5\",\"lsync\":1776443217}}}',	0);
 
+INSERT INTO `lh_chat` (`id`, `nick`, `status`, `status_sub`, `status_sub_sub`, `time`, `user_id`, `hash`, `referrer`, `session_referrer`, `chat_variables`, `remarks`, `ip`, `dep_id`, `invitation_id`, `sender_user_id`, `product_id`, `pnd_time`, `cls_time`, `usaccept`, `user_status`, `user_closed_ts`, `support_informed`, `unread_messages_informed`, `reinform_timeout`, `last_op_msg_time`, `has_unread_op_messages`, `unread_op_messages_informed`, `email`, `country_code`, `country_name`, `unanswered_chat`, `cls_us`, `anonymized`, `user_typing`, `gbot_id`, `user_typing_txt`, `operator_typing`, `operator_typing_id`, `phone`, `has_unread_messages`, `last_user_msg_time`, `fbst`, `online_user_id`, `auto_responder_id`, `last_msg_id`, `lsync`, `transfer_uid`, `additional_data`, `user_tz_identifier`, `lat`, `lon`, `city`, `operation`, `operation_admin`, `status_sub_arg`, `uagent`, `chat_locale`, `chat_locale_to`, `mail_send`, `screenshot_id`, `wait_time`, `chat_duration`, `tslasign`, `priority`, `chat_initiator`, `transfer_timeout_ts`, `transfer_timeout_ac`, `transfer_if_na`, `na_cb_executed`, `device_type`, `nc_cb_executed`, `iwh_id`, `theme_id`, `frt`, `aart`, `mart`) VALUES
+(87537,	'user',	2,	0,	0,	1776347189,	123,	'h16o4ZxLS0cWcUX8aLbEPe5rllZnVzLNpjtduS1a',	'//',	'//',	'{}',	'',	'127.0.0.1',	5,	0,	0,	0,	1776347189,	1776347655,	0,	0,	0,	1,	0,	0,	1776347653,	1,	0,	'eee@eee.com',	'au',	'Australia',	0,	2,	0,	1776347243,	0,	'Some has joined the chat!',	0,	0,	'',	0,	1776347655,	0,	205347,	0,	1228324,	1776359117,	129,	'',	'Australia/Brisbane',	'',	'',	'',	'',	'',	'',	'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36',	'en-AU',	'',	0,	0,	2,	464,	1776347189,	0,	0,	0,	0,	0,	0,	1,	0,	0,	4,	76,	49,	76);
+
+
+INSERT INTO `lh_msg` (`id`, `msg`, `meta_msg`, `time`, `chat_id`, `user_id`, `del_st`, `name_support`) VALUES
+(1227888,	'Chat was assigned to [129] Some',	'{\"content\":{\"assign_action\":{\"user_id\":129,\"last_accepted\":1776346938,\"pending_chats\":0,\"active_chats\":0,\"inactive_chats\":0,\"assign_finished\":1776347189,\"sac\":true,\"sla\":true,\"next_op\":{\"user_id\":285,\"last_accepted\":1776346972,\"pending_chats\":0,\"active_chats\":0,\"inactive_chats\":0},\"file\":\"workflow.php\",\"line\":94}}}',	1776347189,	87537,	-1,	0,	'Some'),
+(1227892,	'Some has accepted the chat!',	'{\"content\":{\"accept_action\":{\"puser_id\":0,\"ol\":[\"click\",\"auto_accept\"],\"user_id\":129,\"name_support\":\"Some\"}}}',	1776347191,	87537,	-1,	0,	'Some'),
+(1227893,	'Hello. How may I help you?',	'{\"content\":{\"auto_responder\":true,\"auto_send\":true}}',	1776347191,	87537,	129,	3,	'Some'),
+(1227895,	'Hello',	'',	1776347196,	87537,	0,	3,	''),
+(1227922,	'Stest',	'',	1776347215,	87537,	0,	3,	''),
+(1227945,	'Some has transferred chat to Some',	'{\"content\":{\"transfer_action_user\":{\"user_id\":129,\"destination\":\"Some\",\"source\":\"Some\"}}}',	1776347240,	87537,	-1,	0,	'Some'),
+(1227947,	'Stest',	'',	1776347241,	87537,	0,	3,	''),
+(1227949,	'Stest',	'{\"content\":{\"accept_action\":{\"user_id\":123,\"name_support\":\"Some\"}}}',	1776347243,	87537,	-1,	0,	'Some'),
+(1227988,	'Stest',	'',	1776347272,	87537,	123,	3,	'Some'),
+(1227992,	'Stest',	'',	1776347278,	87537,	123,	3,	'Some'),
+(1227993,	'Some 1',	'',	1776347278,	87537,	0,	3,	''),
+(1228024,	'Thank you.',	'',	1776347308,	87537,	123,	3,	'Some'),
+(1228027,	'And thank you',	'',	1776347312,	87537,	0,	3,	''),
+(1228059,	'Stest',	'',	1776347353,	87537,	123,	3,	'Some'),
+(1228073,	'Stest',	'',	1776347364,	87537,	123,	3,	'Some'),
+(1228128,	'Stest',	'',	1776347437,	87537,	123,	3,	'Some'),
+(1228158,	'Yes I have processed withdrawal',	'',	1776347479,	87537,	0,	3,	''),
+(1228170,	'Thank you',	'',	1776347494,	87537,	0,	3,	''),
+(1228195,	'I have sent your request to finance. The withdrawal should be released shortly.',	'',	1776347529,	87537,	123,	1,	'Some'),
+(1228247,	'Are you still with me?',	'',	1776347590,	87537,	123,	1,	'Some'),
+(1228324,	'Hello, it seems that you are away. I will close this chat then, but if you still need help, do not hesitate to request a new chat. Goodbye for now.',	'',	1776347653,	87537,	123,	1,	'Some'),
+(1228329,	'SOme has closed the chat!',	'',	1776347655,	87537,	-1,	0,	'Some');
+-- 2026-04-17 17:25:06 UTC
 
 
 DROP TABLE IF EXISTS `lh_notification_op_subscriber`;
