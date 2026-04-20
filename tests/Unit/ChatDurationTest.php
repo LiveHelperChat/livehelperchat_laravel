@@ -135,8 +135,35 @@ class ChatDurationTest extends LegacyTestCase
 
         $this->assertEquals('123 P_USER_ID -- 410 TTA -- 13:54:13 MSG_TIME', $log[36]);
 
+        $log = [];
+        $logMain = [];
+        $chat = \erLhcoreClassModelChat::fetch(95289);
+        $duration = \LiveHelperChat\Helpers\ChatDuration::getChatDurationToUpdateChatID($chat, true, $log, $logMain);
 
+        $this->assertEquals($duration, 556);
+        $this->assertEquals('22 P_USER_ID -- 552 TTA -- 06:08:02 MSG_TIME', $log[53]);
+        $expectedLogMain = array (
+            'response_times' =>
+                array (
+                    22 =>
+                        array (
+                            0 => 29,
+                            1 => 50,
+                            2 => 77,
+                            3 => 103,
+                            4 => 46,
+                        ),
+                ),
+            'response_times_total' =>
+                array (
+                    0 => 29,
+                    1 => 50,
+                    2 => 77,
+                    3 => 103,
+                    4 => 46,
+                ),
+        );
 
-
+        $this->assertEquals($expectedLogMain, $logMain);
     }
 }

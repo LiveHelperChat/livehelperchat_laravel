@@ -2711,6 +2711,42 @@ INSERT INTO `lh_msg` (`id`, `msg`, `meta_msg`, `time`, `chat_id`, `user_id`, `de
 (1228329,	'SOme has closed the chat!',	'',	1776347655,	87537,	-1,	0,	'Some');
 -- 2026-04-17 17:25:06 UTC
 
+INSERT INTO `lh_chat` (`id`, `nick`, `status`, `time`, `user_id`, `hash`, `referrer`, `ip`, `dep_id`, `user_status`, `support_informed`, `email`, `country_code`, `country_name`, `user_typing`, `operator_typing`, `phone`, `has_unread_messages`, `last_user_msg_time`, `last_msg_id`, `additional_data`, `mail_send`, `lat`, `lon`, `city`, `session_referrer`, `wait_time`, `chat_duration`, `chat_variables`, `priority`, `user_typing_txt`, `chat_initiator`, `online_user_id`, `transfer_timeout_ts`, `transfer_timeout_ac`, `transfer_if_na`, `na_cb_executed`, `fbst`, `nc_cb_executed`, `operator_typing_id`, `remarks`, `status_sub`, `operation`, `screenshot_id`, `operation_admin`, `unread_messages_informed`, `reinform_timeout`, `tslasign`, `user_tz_identifier`, `user_closed_ts`, `chat_locale`, `chat_locale_to`, `unanswered_chat`, `product_id`, `last_op_msg_time`, `has_unread_op_messages`, `unread_op_messages_informed`, `status_sub_sub`, `status_sub_arg`, `uagent`, `device_type`, `sender_user_id`, `auto_responder_id`, `lsync`, `usaccept`, `transfer_uid`, `pnd_time`, `cls_time`, `invitation_id`, `anonymized`, `gbot_id`, `cls_us`, `iwh_id`, `theme_id`, `frt`, `aart`, `mart`) VALUES
+    (95289,	'aferg',	2,	1776578322,	22,	'2d8SzjuZhRwnbB5QQLChMzdFJSuI2mDR7JlYwt8R',	'',	'127.0.0.1',	31,	1,	1,	'',	'au',	'Australia',	1776578904,	0,	'',	0,	1776578884,	1340880,	'',	0,	'',	'',	'',	'//www.google.com/',	7,	556,	'',	0,	'aferg has left the chat!',	0,	90008,	0,	0,	0,	0,	0,	1,	0,	'',	0,	'',	0,	'',	0,	0,	1776578326,	'Australia/Brisbane',	1776578909,	'en-AU',	'',	0,	0,	1776578882,	0,	0,	0,	'',	'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',	1,	0,	0,	1776578883,	0,	0,	1776578322,	1776578884,	0,	0,	0,	1,	0,	9,	0,	51,	103);
+
+INSERT INTO `lh_msg` (`id`, `msg`, `time`, `chat_id`, `user_id`, `name_support`, `meta_msg`, `del_st`) VALUES
+(1340688,	'Chat was assigned to [22] Bella',	1776578326,	95289,	-1,	'Bella',	'{\"content\":{\"assign_action\":{\"user_id\":22,\"last_accepted\":1776577791,\"pending_chats\":0,\"active_chats\":0,\"inactive_chats\":0,\"assign_finished\":1776578326,\"sac\":true,\"sla\":true,\"next_op\":{\"user_id\":26,\"last_accepted\":1776578003,\"pending_chats\":0,\"active_chats\":0,\"inactive_chats\":0},\"file\":\"workflow.php\",\"line\":94}}}',	0),
+(1340689,	'Aferg',	1776578326,	95289,	0,	'',	'',	3),
+(1340692,	'Bella has accepted the chat!',	1776578330,	95289,	-1,	'Bella',	'{\"content\":{\"accept_action\":{\"puser_id\":0,\"ol\":[\"auto_accept\"],\"user_id\":22,\"name_support\":\"Bella\"}}}',	0),
+(1340693,	'Example',	1776578330,	95289,	22,	'Bella',	'{\"content\":{\"auto_responder\":true,\"auto_send\":true}}',	3),
+(1340697,	'Example',	1776578332,	95289,	0,	'',	'',	3),
+(1340701,	'Example',	1776578337,	95289,	0,	'',	'',	3),
+(1340702,	'Example',	1776578344,	95289,	0,	'',	'',	3),
+(1340709,	'Example',	1776578352,	95289,	0,	'',	'',	3),
+(1340710,	'Example',	1776578359,	95289,	22,	'Bella',	'',	3),
+(1340712,	'Example',	1776578361,	95289,	0,	'',	'',	3),
+(1340713,	'Example',	1776578366,	95289,	0,	'',	'',	3),
+(1340718,	'Example',	1776578372,	95289,	0,	'',	'',	3),
+(1340720,	'Example',	1776578378,	95289,	0,	'',	'',	3),
+(1340724,	'Example',	1776578390,	95289,	0,	'',	'',	3),
+(1340726,	'Example',	1776578399,	95289,	0,	'',	'',	3),
+(1340730,	'Example',	1776578411,	95289,	22,	'Bella',	'',	3),
+(1340731,	'Example',	1776578411,	95289,	0,	'',	'',	3),
+(1340735,	'Example',	1776578422,	95289,	0,	'',	'',	3),
+(1340738,	'Example',	1776578429,	95289,	0,	'',	'',	3),
+(1340740,	'Example',	1776578438,	95289,	0,	'',	'',	3),
+(1340745,	'Example',	1776578450,	95289,	0,	'',	'',	3),
+(1340758,	'Thank you for confirming. Please allow me one moment.',	1776578488,	95289,	22,	'Bella',	'',	3),
+(1340783,	'Thanjs',	1776578595,	95289,	0,	'',	'',	3),
+(1340799,	'Example',	1776578638,	95289,	0,	'',	'',	3),
+(1340818,	'Example.',	1776578698,	95289,	22,	'Bella',	'',	3),
+(1340826,	'Example.',	1776578720,	95289,	22,	'Bella',	'',	3),
+(1340836,	'Example',	1776578752,	95289,	0,	'',	'',	3),
+(1340841,	'Example',	1776578761,	95289,	0,	'',	'',	3),
+(1340852,	'Do you require any further assistance?',	1776578798,	95289,	22,	'Bella',	'',	3),
+(1340880,	'Thanks for using our 24-hour helpline, and please feel free to contact us again if you require anything else. Goodbye for now!',	1776578882,	95289,	22,	'Bella',	'',	3),
+(1340883,	'Bella has closed the chat!',	1776578884,	95289,	-1,	'Bella',	'',	0);
+
 
 DROP TABLE IF EXISTS `lh_notification_op_subscriber`;
 CREATE TABLE `lh_notification_op_subscriber` (
