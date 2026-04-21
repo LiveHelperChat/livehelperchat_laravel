@@ -142,8 +142,6 @@ class ChatDurationTest extends LegacyTestCase
         $this->assertEquals('123 P_USER_ID -- 410 TTA -- 13:54:13 MSG_TIME', $log[36]);
 
 
-
-
         $log = [];
         $logMain = [];
         $logOpeartor = [];
@@ -153,13 +151,12 @@ class ChatDurationTest extends LegacyTestCase
         $this->assertEquals($duration, 556);
         $this->assertEquals(552, $logOpeartor[22]);
 
-        //$this->assertEquals('22 P_USER_ID -- 552 TTA -- 06:08:02 MSG_TIME', $log[53]);
         $expectedLogMain = array (
             'response_times' =>
                 array (
                     22 =>
                         array (
-                            0 => 30,
+                            0 => 29,
                             1 => 50,
                             2 => 77,
                             3 => 103,
@@ -168,7 +165,7 @@ class ChatDurationTest extends LegacyTestCase
                 ),
             'response_times_total' =>
                 array (
-                    0 => 30,
+                    0 => 29,
                     1 => 50,
                     2 => 77,
                     3 => 103,
@@ -177,5 +174,68 @@ class ChatDurationTest extends LegacyTestCase
         );
 
         $this->assertEquals($expectedLogMain, $logMain);
+
+        $log = [];
+        $logMain = [];
+        $logOperator = [];
+        $chat = \erLhcoreClassModelChat::fetch(86113);
+        $duration = \LiveHelperChat\Helpers\ChatDuration::getChatDurationToUpdateChatID($chat, true, $log, $logMain, $logOperator);
+
+        $expectedLogMain = array (
+            'response_times' =>
+                array (
+                    41 =>
+                        array (
+                            0 => 48,
+                            1 => 165,
+                        ),
+                    158 =>
+                        array (
+                            0 => 39,
+                        ),
+                ),
+            'response_times_total' =>
+                array (
+                    0 => 48,
+                    1 => 165,
+                    2 => 39,
+                ),
+        );
+        $this->assertEquals($expectedLogMain, $logMain);
+        $this->assertEquals(array (
+            41 => 278,
+            158 => 186,
+        ), $logOperator);
+        $this->assertEquals(467, $duration);
+
+        $log = [];
+        $logMain = [];
+        $logOperator = [];
+        $chat = \erLhcoreClassModelChat::fetch(90636);
+        $duration = \LiveHelperChat\Helpers\ChatDuration::getChatDurationToUpdateChatID($chat, true, $log, $logMain, $logOperator);
+        $expectedLogMain = array (
+          'response_times' =>
+          array (
+            38 =>
+            array (
+              0 => 112,
+              1 => 63,
+              2 => 29,
+            ),
+          ),
+          'response_times_total' =>
+          array (
+            0 => 112,
+            1 => 63,
+            2 => 29,
+          ),
+        );
+        $this->assertEquals($expectedLogMain, $logMain);
+        $this->assertEquals(array (
+            38 => 262,
+            42 => 9,
+        ), $logOperator);
+        $this->assertEquals(287, $duration);
+
     }
 }
