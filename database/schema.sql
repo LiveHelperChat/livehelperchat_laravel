@@ -1640,7 +1640,7 @@ INSERT INTO `lh_chat_config` (`identifier`, `value`, `type`, `explain`, `hidden`
 ('customer_site_url',	'http://livehelperchat.com',	0,	'Your site URL address',	0),
 ('dashboard_order',	'[[\"online_operators\",\"departments_stats\",\"online_visitors\"],[\"group_chats\",\"my_chats\",\"pending_chats\",\"transfered_chats\"],[\"active_chats\",\"bot_chats\"]]',	0,	'Home page dashboard widgets order',	0),
 ('default_admin_theme_id',	'0',	0,	'Default admin theme ID',	1),
-('default_theme_id',	'0',	0,	'Default theme ID.',	1),
+('default_theme_id',	'1',	0,	'Default theme ID.',	1),
 ('del_on_close_no_msg',	'0',	0,	'Delete chat on close if there are no messages from the visitor',	0),
 ('departament_availability',	'364',	0,	'How long department availability statistic should be kept? (days)',	0),
 ('departament_availability_last',	'1761568507',	0,	'Track last department availability cleanup',	1),

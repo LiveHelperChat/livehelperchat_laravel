@@ -72,6 +72,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'lhc' => \App\Http\Middleware\LiveHelperChat::class,
         ]);
     })
+    // Auto-discover Artisan commands in app/Console/Commands.
+    ->withCommands()
     ->withExceptions(function (Exceptions $exceptions) {
         // Handle 404 and MethodNotAllowed exceptions by passing to legacy framework
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
