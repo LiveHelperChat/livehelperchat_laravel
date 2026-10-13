@@ -1151,95 +1151,99 @@ CREATE TABLE `lh_abstract_survey_item` (
 DROP TABLE IF EXISTS `lh_abstract_widget_theme`;
 CREATE TABLE `lh_abstract_widget_theme` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name_company` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `onl_bcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bor_bcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'e3e3e3',
-  `text_color` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `online_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `online_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `offline_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `offline_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `logo_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `logo_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `header_background` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_tcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_bcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_border` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_close_bg` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_hover_bg` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_close_hover_bg` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `custom_status_css` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `custom_container_css` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `custom_widget_css` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_header` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `need_help_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `online_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `offline_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `widget_border_color` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `copyright_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `copyright_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `widget_copyright_url` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `name_company` text NOT NULL,
+  `onl_bcolor` varchar(10) NOT NULL,
+  `bor_bcolor` varchar(10) NOT NULL DEFAULT 'e3e3e3',
+  `text_color` varchar(10) NOT NULL,
+  `online_image` varchar(250) NOT NULL,
+  `online_image_path` varchar(250) NOT NULL,
+  `offline_image` varchar(250) NOT NULL,
+  `offline_image_path` varchar(250) NOT NULL,
+  `logo_image` varchar(250) NOT NULL,
+  `logo_image_path` varchar(250) NOT NULL,
+  `need_help_image` varchar(250) NOT NULL,
+  `header_background` varchar(10) NOT NULL,
+  `need_help_tcolor` varchar(10) NOT NULL,
+  `need_help_bcolor` varchar(10) NOT NULL,
+  `need_help_border` varchar(10) NOT NULL,
+  `need_help_close_bg` varchar(10) NOT NULL,
+  `need_help_hover_bg` varchar(10) NOT NULL,
+  `need_help_close_hover_bg` varchar(10) NOT NULL,
+  `need_help_image_path` varchar(250) NOT NULL,
+  `custom_status_css` mediumtext NOT NULL,
+  `custom_container_css` mediumtext NOT NULL,
+  `custom_widget_css` mediumtext NOT NULL,
+  `need_help_header` text NOT NULL,
+  `need_help_text` text NOT NULL,
+  `online_text` text NOT NULL,
+  `offline_text` text NOT NULL,
+  `widget_border_color` varchar(10) NOT NULL,
+  `copyright_image` varchar(250) NOT NULL,
+  `copyright_image_path` varchar(250) NOT NULL,
+  `widget_copyright_url` text NOT NULL,
   `show_copyright` int(11) NOT NULL DEFAULT 1,
-  `explain_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `intro_operator_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `minimize_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `minimize_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `restore_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `restore_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `close_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `close_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `popup_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `popup_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `explain_text` text NOT NULL,
+  `intro_operator_text` text NOT NULL,
+  `operator_image` varchar(250) NOT NULL,
+  `operator_image_path` varchar(250) NOT NULL,
+  `minimize_image` varchar(250) NOT NULL,
+  `minimize_image_path` varchar(250) NOT NULL,
+  `restore_image` varchar(250) NOT NULL,
+  `restore_image_path` varchar(250) NOT NULL,
+  `close_image` varchar(250) NOT NULL,
+  `close_image_path` varchar(250) NOT NULL,
+  `popup_image` varchar(250) NOT NULL,
+  `popup_image_path` varchar(250) NOT NULL,
   `hide_close` int(11) NOT NULL DEFAULT 0,
   `hide_popup` int(11) NOT NULL DEFAULT 0,
   `header_height` int(11) NOT NULL DEFAULT 0,
   `header_padding` int(11) NOT NULL DEFAULT 0,
   `widget_border_width` int(11) NOT NULL DEFAULT 0,
-  `support_joined` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `support_closed` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pending_join` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `noonline_operators` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `noonline_operators_offline` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `support_joined` text NOT NULL,
+  `support_closed` text NOT NULL,
+  `pending_join` text NOT NULL,
+  `noonline_operators` text NOT NULL,
+  `noonline_operators_offline` text NOT NULL,
   `show_need_help` int(11) NOT NULL DEFAULT 1,
   `show_need_help_timeout` int(11) NOT NULL DEFAULT 24,
   `show_voting` tinyint(1) NOT NULL DEFAULT 1,
-  `department_title` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `department_select` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `buble_visitor_background` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `buble_visitor_title_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `buble_visitor_text_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `buble_operator_background` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `buble_operator_title_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `buble_operator_text_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `custom_popup_css` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `department_title` text NOT NULL,
+  `department_select` varchar(250) NOT NULL,
+  `buble_visitor_background` varchar(250) NOT NULL,
+  `buble_visitor_title_color` varchar(250) NOT NULL,
+  `buble_visitor_text_color` varchar(250) NOT NULL,
+  `buble_operator_background` varchar(250) NOT NULL,
+  `buble_operator_title_color` varchar(250) NOT NULL,
+  `buble_operator_text_color` varchar(250) NOT NULL,
+  `custom_popup_css` mediumtext NOT NULL,
   `hide_ts` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `widget_response_width` int(11) NOT NULL DEFAULT 0,
   `show_need_help_delay` int(11) NOT NULL DEFAULT 0,
   `show_status_delay` int(11) NOT NULL DEFAULT 0,
   `modern_look` tinyint(1) NOT NULL DEFAULT 0,
-  `bot_status_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bot_configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `notification_configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pending_join_queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bot_status_text` text NOT NULL,
+  `bot_configuration` longtext NOT NULL,
+  `notification_configuration` longtext NOT NULL,
+  `pending_join_queue` text NOT NULL,
   `modified` int(11) NOT NULL,
   `widget_show_leave_form` tinyint(1) NOT NULL,
   `enable_widget_embed_override` tinyint(1) NOT NULL,
   `widget_popheight` int(11) NOT NULL,
   `widget_popwidth` int(11) NOT NULL,
   `widget_survey` int(11) NOT NULL,
-  `widget_position` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `widget_position` varchar(50) NOT NULL,
   `widget_pright` int(11) NOT NULL,
   `widget_pbottom` int(11) NOT NULL,
-  `alias` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alias` varchar(50) NOT NULL,
   `hide_op_ts` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `alias` (`alias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `lh_abstract_widget_theme` (`id`, `name`, `name_company`, `onl_bcolor`, `bor_bcolor`, `text_color`, `online_image`, `online_image_path`, `offline_image`, `offline_image_path`, `logo_image`, `logo_image_path`, `need_help_image`, `header_background`, `need_help_tcolor`, `need_help_bcolor`, `need_help_border`, `need_help_close_bg`, `need_help_hover_bg`, `need_help_close_hover_bg`, `need_help_image_path`, `custom_status_css`, `custom_container_css`, `custom_widget_css`, `need_help_header`, `need_help_text`, `online_text`, `offline_text`, `widget_border_color`, `copyright_image`, `copyright_image_path`, `widget_copyright_url`, `show_copyright`, `explain_text`, `intro_operator_text`, `operator_image`, `operator_image_path`, `minimize_image`, `minimize_image_path`, `restore_image`, `restore_image_path`, `close_image`, `close_image_path`, `popup_image`, `popup_image_path`, `hide_close`, `hide_popup`, `header_height`, `header_padding`, `widget_border_width`, `support_joined`, `support_closed`, `pending_join`, `noonline_operators`, `noonline_operators_offline`, `show_need_help`, `show_need_help_timeout`, `show_voting`, `department_title`, `department_select`, `buble_visitor_background`, `buble_visitor_title_color`, `buble_visitor_text_color`, `buble_operator_background`, `buble_operator_title_color`, `buble_operator_text_color`, `custom_popup_css`, `hide_ts`, `widget_response_width`, `show_need_help_delay`, `show_status_delay`, `modern_look`, `bot_status_text`, `bot_configuration`, `notification_configuration`, `pending_join_queue`, `modified`, `widget_show_leave_form`, `enable_widget_embed_override`, `widget_popheight`, `widget_popwidth`, `widget_survey`, `widget_position`, `widget_pright`, `widget_pbottom`, `alias`, `hide_op_ts`) VALUES
+(1,	'Intro Bot',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	0,	0,	0,	1,	'',	'',	'',	'',	'',	1,	24,	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	0,	0,	0,	1,	'',	'{\"theme_expires\":\"\",\"icons_order\":\"\",\"nh_width\":\"\",\"nh_height\":\"\",\"nh_right\":\"\",\"nh_bottom\":\"\",\"hide_mobile_nh\":0,\"lazy_load\":0,\"custom_html_footer_raw\":0,\"always_present_nh\":0,\"hide_close_nh\":0,\"load_w2\":0,\"drag_enabled\":0,\"animate_nh\":0,\"disable_sound\":0,\"hide_iframe\":0,\"hide_parent\":0,\"kcw\":0,\"custom_html\":\"\",\"inject_html\":\"\",\"header_html\":\"\",\"survey_title\":\"\",\"survey_feedback\":\"\",\"custom_html_widget\":\"\",\"custom_survey_css\":\"\",\"custom_page_css\":\"\",\"custom_html_bot\":\"\",\"custom_html_widget_bot\":\"\",\"custom_html_header\":\"\",\"custom_html_footer\":\"\",\"intro_message\":\"\",\"intro_message_html\":\"\",\"pre_chat_html\":\"\",\"pre_offline_chat_html\":\"\",\"custom_html_header_body\":\"\",\"custom_html_status\":\"\",\"after_chat_status\":\"\",\"custom_start_button\":\"\",\"custom_tos_text\":\"\",\"min_text\":\"\",\"shrink_text\":\"\",\"expand_text\":\"\",\"popup_text\":\"\",\"end_chat_text\":\"\",\"fheight_text_class\":\"\",\"fheight_text_col\":\"\",\"custom_start_button_bot\":\"\",\"bot_id\":\"1\",\"trigger_id\":\"1\",\"custom_start_button_offline\":\"\",\"back_to_chat\":\"\",\"need_help_html\":\"\",\"thank_feedback\":\"\",\"blocked_visitor\":\"\",\"formf_name\":\"\",\"formf_email\":\"\",\"formf_file\":\"\",\"formf_phone\":\"\",\"formf_question\":\"\",\"bot_button_border\":\"\",\"bot_button_background\":\"\",\"bot_button_background_hover\":\"\",\"bot_button_text_color\":\"\",\"bot_button_border_radius\":\"\",\"bot_button_padding\":\"\",\"bot_button_padding_left_right\":\"\",\"bot_button_fs\":\"\",\"wheight\":\"\",\"wwidth\":\"\",\"expandw\":\"\",\"expandh\":\"\",\"operator_avatar\":\"\",\"nh_avatar\":\"\",\"wright\":\"\",\"wbottom\":\"\",\"wtop\":\"\",\"user_msg_height\":\"\",\"wright_inv\":\"\",\"switch_to_human\":\"\",\"placeholder_message\":\"\",\"placeholder_name\":\"\",\"placeholder_file_message\":\"\",\"custom_op_name\":\"\",\"chat_unavailable\":\"\",\"disable_edit_prev\":0,\"confirm_close\":0,\"start_on_close\":0,\"prev_msg\":1,\"custom_html_priority\":0,\"proactive_once_typed\":0,\"hide_job_title\":0,\"close_on_unload\":0,\"dont_prefill_offline\":0,\"hide_bb_code\":0,\"msg_snippet\":0,\"font_size\":0,\"use_system_tz\":0,\"print_btn_msg\":0,\"same_target_link\":0,\"target_same_always\":0,\"survey_button\":0,\"np_border\":0,\"no_voice_messages\":0,\"hide_message_label\":1,\"fa_direct\":0,\"show_operator_profile\":1,\"hide_start_button\":0,\"show_messages_box\":1,\"enable_react_for_vi\":0,\"one_reaction_per_msg\":0,\"reactions_always_visible_under\":0,\"always_visible_reactions\":0,\"custom_tb_reactions\":\"\",\"custom_mw_reactions\":\"\",\"fscreen_embed\":0,\"auto_bot_intro\":0,\"use_bot_profile\":0,\"detect_language\":0,\"bubble_style_profile\":0,\"hide_delivery_status\":0,\"keep_double_tick\":0,\"show_chat_translated\":0,\"hide_status\":0,\"msg_expand\":0,\"hide_visitor_profile\":0,\"header_icon_color\":\"\",\"op_background\":\"\",\"msg_background\":\"\",\"operator_txt_color\":\"\",\"label_txt_color\":\"\",\"input_bg_color\":\"\",\"input_plc_color\":\"\",\"input_brd_color\":\"\",\"input_brd_active\":\"\",\"send_icons_clr\":\"\",\"send_icons_clr_hover\":\"\",\"input_shd_color\":\"\",\"input_txt_color\":\"\",\"send_area_background\":\"\",\"send_area_border_w\":\"\",\"send_area_border_c\":\"\",\"status_border_w\":\"\",\"status_border_c\":\"\",\"offl_bcolor\":\"\",\"offlbor_bcolor\":\"\",\"offltxt_color\":\"\",\"close_in_status\":0,\"job_new_row\":0,\"cnew_msg\":\"\",\"cnew_msgm\":\"\",\"cscroll_btn\":\"\",\"bg_scroll_bottom\":\"\",\"text_scroll_bottom\":\"\",\"embed_closed\":\"\",\"viewport\":\"\",\"msg_time_format_day\":\"\",\"msg_time_format_time\":\"\",\"cnew_msgh\":\"\",\"new_msg_text_color\":\"\",\"bg_new_msg\":\"\",\"buble_reaction_background_vi\":\"\",\"delivered_msg_color\":\"\",\"buble_reaction_color_vi\":\"\",\"buble_reaction_background_op\":\"\",\"buble_reaction_color_op\":\"\"}',	'{\"notification_enabled\":0,\"ntitle\":\"\",\"ndomain\":\"\"}',	'',	1791871182,	0,	0,	520,	500,	0,	'bottom_right',	0,	0,	'',	0);
+
 
 
 DROP TABLE IF EXISTS `lh_admin_theme`;
@@ -1955,10 +1959,10 @@ CREATE TABLE `lh_cobrowse` (
 DROP TABLE IF EXISTS `lh_departament`;
 CREATE TABLE `lh_departament` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `xmpp_recipients` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `xmpp_group_recipients` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `xmpp_recipients` text NOT NULL,
+  `xmpp_group_recipients` text NOT NULL,
   `priority` int(11) NOT NULL,
   `sort_priority` int(11) NOT NULL,
   `department_transfer_id` int(11) NOT NULL,
@@ -1975,7 +1979,7 @@ CREATE TABLE `lh_departament` (
   `delay_lm` int(11) NOT NULL,
   `max_active_chats` int(11) NOT NULL,
   `max_timeout_seconds` int(11) NOT NULL,
-  `identifier` varchar(2083) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(2083) NOT NULL,
   `mod_start_hour` int(4) NOT NULL DEFAULT -1,
   `mod_end_hour` int(4) NOT NULL DEFAULT -1,
   `tud_start_hour` int(4) NOT NULL DEFAULT -1,
@@ -1997,7 +2001,7 @@ CREATE TABLE `lh_departament` (
   `visible_if_online` tinyint(1) NOT NULL,
   `inform_close` int(11) NOT NULL,
   `inform_unread_delay` int(11) NOT NULL,
-  `inform_options` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `inform_options` varchar(250) NOT NULL,
   `online_hours_active` tinyint(1) NOT NULL,
   `inform_delay` int(11) NOT NULL,
   `attr_int_1` int(11) NOT NULL DEFAULT 0,
@@ -2012,10 +2016,10 @@ CREATE TABLE `lh_departament` (
   `inop_chats_cnt` int(11) NOT NULL DEFAULT 0,
   `acop_chats_cnt` int(11) NOT NULL DEFAULT 0,
   `inform_close_all` int(11) NOT NULL DEFAULT 0,
-  `inform_close_all_email` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  `alias` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `product_configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bot_configuration` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `inform_close_all_email` varchar(250) NOT NULL DEFAULT '0',
+  `alias` varchar(50) NOT NULL,
+  `product_configuration` longtext NOT NULL,
+  `bot_configuration` text NOT NULL,
   `dep_offline` tinyint(1) NOT NULL DEFAULT 0,
   `max_load_op` int(11) unsigned NOT NULL DEFAULT 0,
   `max_load_op_h` int(11) unsigned NOT NULL DEFAULT 0,
@@ -2049,7 +2053,7 @@ CREATE TABLE `lh_departament` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_departament` (`id`, `name`, `email`, `xmpp_recipients`, `xmpp_group_recipients`, `priority`, `sort_priority`, `department_transfer_id`, `transfer_timeout`, `exclude_inactive_chats`, `delay_before_assign`, `max_ac_dep_chats`, `assign_same_language`, `archive`, `max_load`, `max_load_h`, `disabled`, `hidden`, `delay_lm`, `max_active_chats`, `max_timeout_seconds`, `identifier`, `mod_start_hour`, `mod_end_hour`, `tud_start_hour`, `tud_end_hour`, `wed_start_hour`, `wed_end_hour`, `thd_start_hour`, `thd_end_hour`, `frd_start_hour`, `frd_end_hour`, `sad_start_hour`, `sad_end_hour`, `sud_start_hour`, `sud_end_hour`, `nc_cb_execute`, `na_cb_execute`, `inform_unread`, `active_balancing`, `visible_if_online`, `inform_close`, `inform_unread_delay`, `inform_options`, `online_hours_active`, `inform_delay`, `attr_int_1`, `attr_int_2`, `attr_int_3`, `pending_max`, `pending_group_max`, `active_chats_counter`, `inactive_chats_cnt`, `pending_chats_counter`, `bot_chats_counter`, `inop_chats_cnt`, `acop_chats_cnt`, `inform_close_all`, `inform_close_all_email`, `alias`, `product_configuration`, `bot_configuration`, `dep_offline`, `max_load_op`, `max_load_op_h`, `max_ac_dep_mails`, `delay_before_assign_mail`, `ignore_op_status`, `max_active_mails`, `max_timeout_seconds_mail`, `active_mail_balancing`) VALUES
-(1,	'default',	'',	'',	'',	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	'',	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	0,	0,	0,	0,	0,	0,	0,	'',	0,	0,	0,	0,	0,	0,	0,	3,	0,	0,	0,	0,	0,	0,	'',	'',	'',	'',	0,	0,	0,	0,	0,	0,	0,	0,	0);
+(1,	'default',	'',	'',	'',	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	'',	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	0,	0,	0,	0,	0,	0,	0,	'a:0:{}',	0,	0,	0,	0,	0,	0,	0,	3,	0,	0,	0,	0,	0,	0,	'',	'',	'{\"products_enabled\":0,\"products_required\":0}',	'{\"auto_lower_limit\":0,\"assign_by_priority\":0,\"active_prioritized_assignment\":0,\"assign_by_priority_chat\":0,\"only_priority\":0,\"min_agent_priority\":0,\"priority_check\":0,\"min_chat_priority\":0,\"max_chat_priority\":0,\"off_op_exec\":0,\"no_transfer_no_operators\":0,\"off_op_work_hours\":0,\"ru_on_transfer\":0,\"off_if_online\":0,\"bot_id\":0,\"mailbox_id\":0,\"transfer_min_priority\":\"\",\"theme_ind\":0,\"survey_id\":0,\"bot_only_offline\":false,\"hide_survey_bot\":false,\"bot_foh\":false,\"auto_delay_timeout\":0,\"auto_delay_var\":\"\",\"hide_send_email\":false}',	0,	0,	0,	0,	0,	0,	0,	0,	0);
 
 DROP TABLE IF EXISTS `lh_departament_availability`;
 CREATE TABLE `lh_departament_availability` (
@@ -2201,17 +2205,22 @@ CREATE TABLE `lh_forgotpasswordhash` (
 DROP TABLE IF EXISTS `lh_generic_bot_bot`;
 CREATE TABLE `lh_generic_bot_bot` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `avatar` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filename` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filepath` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nick` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attr_str_1` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attr_str_2` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attr_str_3` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `configuration` longtext NOT NULL,
+  `avatar` varchar(150) NOT NULL,
+  `filename` varchar(250) NOT NULL,
+  `filepath` varchar(250) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `nick` varchar(100) NOT NULL,
+  `attr_str_1` varchar(100) NOT NULL,
+  `attr_str_2` varchar(100) NOT NULL,
+  `attr_str_3` varchar(100) NOT NULL,
+  `short_name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `lh_generic_bot_bot` (`id`, `configuration`, `avatar`, `filename`, `filepath`, `name`, `nick`, `attr_str_1`, `attr_str_2`, `attr_str_3`, `short_name`) VALUES
+(1,	'{\"exc_group_id\":[],\"bot_id\":[],\"profile_hide\":false,\"msg_hide\":false}',	'',	'',	'',	'IntroBot',	'IntroBot',	'',	'',	'',	'');
+
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_chat_event`;
@@ -2288,13 +2297,16 @@ CREATE TABLE `lh_generic_bot_exception_message` (
 DROP TABLE IF EXISTS `lh_generic_bot_group`;
 CREATE TABLE `lh_generic_bot_group` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
   `is_collapsed` int(11) NOT NULL DEFAULT 0,
   `pos` int(11) NOT NULL DEFAULT 0,
   `bot_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `bot_id` (`bot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `lh_generic_bot_group` (`id`, `name`, `is_collapsed`, `pos`, `bot_id`) VALUES
+(1,	'Default',	0,	0,	1);
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_payload`;
@@ -2355,8 +2367,8 @@ CREATE TABLE `lh_generic_bot_rest_api_cache` (
 DROP TABLE IF EXISTS `lh_generic_bot_trigger`;
 CREATE TABLE `lh_generic_bot_trigger` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `actions` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `actions` longtext NOT NULL,
   `group_id` bigint(20) NOT NULL,
   `bot_id` int(11) NOT NULL,
   `default` int(11) NOT NULL,
@@ -2374,6 +2386,9 @@ CREATE TABLE `lh_generic_bot_trigger` (
   KEY `group_id` (`group_id`),
   KEY `in_progress` (`in_progress`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `lh_generic_bot_trigger` (`id`, `name`, `actions`, `group_id`, `bot_id`, `default`, `default_unknown`, `as_argument`, `default_unknown_btn`, `default_always`, `pos`, `in_progress`) VALUES
+(1,	'Long Intro',	'[{\"_id\":\"8yD9pp2Ix\",\"type\":\"text\",\"content\":{\"text\":\"Long Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong IntroLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong IntroLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong Intro\\nLong IntroLong Intro\"}}]',	1,	1,	0,	0,	1,	0,	0,	0,	0);
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_trigger_event`;
@@ -3286,6 +3301,8 @@ CREATE TABLE `lh_userdep` (
   `chat_max_priority` int(11) NOT NULL DEFAULT 0,
   `chat_min_priority` int(11) NOT NULL DEFAULT 0,
   `only_priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `chat_min_priority_std` int(11) NOT NULL DEFAULT 0,
+  `chat_max_priority_std` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `last_activity_hide_online_dep_id` (`last_activity`,`hide_online`,`dep_id`),
   KEY `dep_id` (`dep_id`),
@@ -3294,8 +3311,8 @@ CREATE TABLE `lh_userdep` (
   KEY `online_op_widget_3` (`user_id`,`active_chats`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `lh_userdep` (`id`, `user_id`, `dep_id`, `last_activity`, `lastd_activity`, `exclude_autoasign`, `hide_online`, `last_accepted`, `active_chats`, `pending_chats`, `inactive_chats`, `max_chats`, `type`, `ro`, `hide_online_ts`, `dep_group_id`, `always_on`, `exclude_autoasign_mails`, `exc_indv_autoasign`, `last_accepted_mail`, `active_mails`, `pending_mails`, `max_mails`, `assign_priority`, `chat_max_priority`, `chat_min_priority`, `only_priority`) VALUES
-(1,	1,	0,	1762412339,	1762411937,	0,	0,	0,	3,	0,	0,	0,	0,	0,	1685955908,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0);
+INSERT INTO `lh_userdep` (`id`, `user_id`, `dep_id`, `last_activity`, `lastd_activity`, `exclude_autoasign`, `hide_online`, `last_accepted`, `active_chats`, `pending_chats`, `inactive_chats`, `max_chats`, `type`, `ro`, `hide_online_ts`, `dep_group_id`, `always_on`, `exclude_autoasign_mails`, `exc_indv_autoasign`, `last_accepted_mail`, `active_mails`, `pending_mails`, `max_mails`, `assign_priority`, `chat_max_priority`, `chat_min_priority`, `only_priority`, `chat_min_priority_std`, `chat_max_priority_std`) VALUES
+(1,	1,	0,	1791876284,	1791875107,	0,	0,	0,	3,	0,	0,	0,	0,	0,	1791874601,	0,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0);
 
 DROP TABLE IF EXISTS `lh_userdep_alias`;
 CREATE TABLE `lh_userdep_alias` (
@@ -3355,22 +3372,22 @@ CREATE TABLE `lh_userdep_disabled` (
 DROP TABLE IF EXISTS `lh_users`;
 CREATE TABLE `lh_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `time_zone` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `surname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filepath` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filename` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `job_title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `departments_ids` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chat_nickname` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `xmpp_username` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `session_id` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `avatar` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operation_admin` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `skype` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(80) NOT NULL,
+  `password` varchar(200) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `time_zone` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `surname` varchar(100) NOT NULL,
+  `filepath` varchar(200) NOT NULL,
+  `filename` varchar(200) NOT NULL,
+  `job_title` varchar(100) NOT NULL,
+  `departments_ids` text NOT NULL,
+  `chat_nickname` varchar(100) NOT NULL,
+  `xmpp_username` varchar(200) NOT NULL,
+  `session_id` varchar(40) NOT NULL,
+  `avatar` varchar(150) NOT NULL,
+  `operation_admin` text NOT NULL,
+  `skype` varchar(50) NOT NULL,
   `exclude_autoasign` tinyint(1) NOT NULL,
   `disabled` tinyint(4) NOT NULL,
   `hide_online` tinyint(1) NOT NULL,
@@ -3390,17 +3407,20 @@ CREATE TABLE `lh_users` (
   `always_on` tinyint(1) NOT NULL DEFAULT 0,
   `exclude_autoasign_mails` tinyint(1) NOT NULL DEFAULT 0,
   `max_active_mails` int(11) NOT NULL DEFAULT 0,
+  `offline_reason_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `team_lead_user_id` int(11) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `hide_online` (`hide_online`),
   KEY `rec_per_req` (`rec_per_req`),
   KEY `disabled` (`disabled`),
   KEY `email` (`email`),
   KEY `xmpp_username` (`xmpp_username`(191)),
-  KEY `username` (`username`)
+  KEY `username` (`username`),
+  KEY `team_lead_user_id` (`team_lead_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `lh_users` (`id`, `username`, `password`, `email`, `time_zone`, `name`, `surname`, `filepath`, `filename`, `job_title`, `departments_ids`, `chat_nickname`, `xmpp_username`, `session_id`, `avatar`, `operation_admin`, `skype`, `exclude_autoasign`, `disabled`, `hide_online`, `all_departments`, `invisible_mode`, `inactive_mode`, `rec_per_req`, `auto_accept`, `max_active_chats`, `cache_version`, `pswd_updated`, `attr_int_1`, `attr_int_2`, `attr_int_3`, `force_logout`, `llogin`, `always_on`, `exclude_autoasign_mails`, `max_active_mails`) VALUES
-(1,	'admin',	'$2y$10$EXAMPLE.HASH.PLACEHOLDER.CHANGE.IN.PRODUCTION',	'admin@example.com',	'',	'Admin',	'User',	'var/userphoto/2022y/01/01/1/',	'ad5e293b9db6191f696b1c519e93f1af.png',	'',	'0',	'',	'',	'',	'',	'',	'',	0,	0,	0,	1,	0,	0,	0,	0,	0,	2,	1641021220,	0,	0,	0,	0,	1762342315,	0,	0,	0);
+INSERT INTO `lh_users` (`id`, `username`, `password`, `email`, `time_zone`, `name`, `surname`, `filepath`, `filename`, `job_title`, `departments_ids`, `chat_nickname`, `xmpp_username`, `session_id`, `avatar`, `operation_admin`, `skype`, `exclude_autoasign`, `disabled`, `hide_online`, `all_departments`, `invisible_mode`, `inactive_mode`, `rec_per_req`, `auto_accept`, `max_active_chats`, `cache_version`, `pswd_updated`, `attr_int_1`, `attr_int_2`, `attr_int_3`, `force_logout`, `llogin`, `always_on`, `exclude_autoasign_mails`, `max_active_mails`, `offline_reason_id`, `team_lead_user_id`) VALUES
+(1,	'admin',	'$2y$10$EXAMPLE.HASH.PLACEHOLDER.CHANGE.IN.PRODUCTION',	'admin@example.com',	'',	'Remi',	'Kimi',	'var/userphoto/2022y/01/01/1/',	'ad5e293b9db6191f696b1c519e93f1af.png',	'',	'0',	'',	'',	'',	'',	'',	'',	0,	0,	0,	1,	0,	0,	0,	0,	0,	3,	1641021220,	0,	0,	0,	0,	1791875107,	1,	0,	0,	0,	0);
 
 DROP TABLE IF EXISTS `lh_users_login`;
 CREATE TABLE `lh_users_login` (
