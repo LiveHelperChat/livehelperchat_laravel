@@ -173,10 +173,23 @@ abstract class LegacyTestCase extends TestCase
     protected function createMockUser(int $userId = 1, array $userData = []): \Mockery\MockInterface
     {
         $currentUser = \Mockery::mock('erLhcoreClassUser');
-        
-        // Set default behavior for commonly used methods
+
+        // Set default behavior for commonly used methods.
+        // On a fresh (e.g. CI) database the user may not exist, in which case
+        // fetch() returns null. Fall back to an in-memory instance so that
+        // getOnlineOperators() never tries to read properties on null.
         $defaultUserData = \erLhcoreClassModelUser::fetch($userId);
-        
+
+        if (!is_object($defaultUserData)) {
+            $defaultUserData = new \erLhcoreClassModelUser();
+            $defaultUserData->id = $userId;
+        }
+
+        // Allow tests to override individual user properties.
+        foreach ($userData as $property => $value) {
+            $defaultUserData->{$property} = $value;
+        }
+
         // Configure default expectations - allows() creates expectations that can be called 0+ times
         $currentUser->allows([
             'getUserID' => $userId,
