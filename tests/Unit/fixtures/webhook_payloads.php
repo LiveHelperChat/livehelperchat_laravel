@@ -81,6 +81,23 @@ $maxMessageCreatedPayload = [
     ],
 ];
 
+// Telegram conditions as shipped by the lhctelegram extension, including the negated
+// main_cond: supergroup chats are ignored while private chats and callback queries are
+// accepted (a callback query has no root message.chat.type, so the negated condition is
+// met because the attribute is missing).
+// extension/lhctelegram/doc/telegram/incoming-webhook.json
+$telegramMainCondConditions = [
+    'messages' => '',
+    'message_direct' => true,
+    'main_cond' => 'message.chat.type!=supergroup',
+    'nick' => 'message.from.first_name|||message.from.last_name|||callback_query.from.first_name|||callback_query.from.last_name',
+    'chat_id' => 'message.chat.id|||callback_query.message.chat.id|||edited_message.chat.id',
+    'msg_cond' => 'message.text=__exists__',
+    'msg_cond_img' => 'message.photo=__exists__',
+    'msg_cond_attachments' => 'message.document=__exists__',
+    'msg_btn_cond_1' => 'callback_query.data=__exists__',
+];
+
 return [
 
     // ---------------------------------------------------------------------
@@ -1298,6 +1315,270 @@ return [
         'attributes' => [
             ['key' => 'nick', 'expected' => 'John'],
             ['key' => 'chat_id', 'expected' => 777000],
+        ],
+    ],
+
+    // ---------------------------------------------------------------------
+    // Telegram main_cond negation (message.chat.type!=supergroup)
+    // extension/lhctelegram/doc/telegram/incoming-webhook.json
+    // ---------------------------------------------------------------------
+    'telegram_main_cond_private' => [
+        'provider' => 'Telegram',
+        'description' => 'Private chat message accepted by main_cond message.chat.type!=supergroup',
+        'conditions' => $telegramMainCondConditions,
+        'full_payload' => [
+            'update_id' => 532262440,
+            'message' => [
+                'message_id' => 3193,
+                'from' => [
+                    'id' => 441347276,
+                    'is_bot' => false,
+                    'first_name' => 'Remigijus',
+                    'last_name' => 'Kiminas',
+                    'username' => 'remdex',
+                    'language_code' => 'en',
+                ],
+                'chat' => [
+                    'id' => 441347276,
+                    'first_name' => 'Remigijus',
+                    'last_name' => 'Kiminas',
+                    'username' => 'remdex',
+                    'type' => 'private',
+                ],
+                'date' => 1788949109,
+                'text' => 'Fresh start',
+            ],
+        ],
+        'message_payload' => [
+            'update_id' => 532262440,
+            'message' => [
+                'message_id' => 3193,
+                'from' => [
+                    'id' => 441347276,
+                    'is_bot' => false,
+                    'first_name' => 'Remigijus',
+                    'last_name' => 'Kiminas',
+                    'username' => 'remdex',
+                    'language_code' => 'en',
+                ],
+                'chat' => [
+                    'id' => 441347276,
+                    'first_name' => 'Remigijus',
+                    'last_name' => 'Kiminas',
+                    'username' => 'remdex',
+                    'type' => 'private',
+                ],
+                'date' => 1788949109,
+                'text' => 'Fresh start',
+            ],
+        ],
+        'expectations' => [
+            ['field' => 'main_cond', 'payload' => 'full', 'expected' => true, 'note' => 'chat type private differs from supergroup'],
+            ['field' => 'main_cond', 'payload' => 'message', 'expected' => true],
+            ['field' => 'msg_cond', 'payload' => 'full', 'expected' => true],
+            ['field' => 'msg_btn_cond_1', 'payload' => 'full', 'expected' => false],
+            [
+                'field' => 'main_cond',
+                'conditions' => ['main_cond' => 'message.chat.type!=private'],
+                'payload' => 'full',
+                'expected' => false,
+                'note' => 'negated condition fails when the value is equal',
+            ],
+        ],
+        'attributes' => [
+            ['key' => 'nick', 'conditions' => ['nick' => 'message.from.first_name'], 'expected' => 'Remigijus'],
+            ['key' => 'chat_id', 'conditions' => ['chat_id' => 'message.chat.id'], 'expected' => 441347276],
+        ],
+    ],
+
+    'telegram_main_cond_callback' => [
+        'provider' => 'Telegram',
+        'description' => 'Callback query accepted by main_cond message.chat.type!=supergroup (attribute is missing)',
+        'conditions' => $telegramMainCondConditions,
+        'full_payload' => [
+            'update_id' => 912345678,
+            'callback_query' => [
+                'id' => '4122368201564890123',
+                'from' => [
+                    'id' => 512345678,
+                    'is_bot' => false,
+                    'first_name' => 'John',
+                    'language_code' => 'en',
+                ],
+                'message' => [
+                    'message_id' => 1842,
+                    'from' => [
+                        'id' => 7012345678,
+                        'is_bot' => true,
+                        'first_name' => 'SmartDiag',
+                        'username' => 'smartdiag_bot',
+                    ],
+                    'chat' => [
+                        'id' => 512345678,
+                        'first_name' => 'John',
+                        'type' => 'private',
+                    ],
+                    'date' => 1760280000,
+                    'text' => 'Choose an option',
+                    'reply_markup' => [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => 'Yes', 'callback_data' => 'trigger__2021__a1b2c3__98765'],
+                            ],
+                        ],
+                    ],
+                ],
+                'chat_instance' => '-3456789012345678901',
+                'data' => 'trigger__2021__a1b2c3__98765',
+            ],
+        ],
+        'message_payload' => [
+            'update_id' => 912345678,
+            'callback_query' => [
+                'id' => '4122368201564890123',
+                'from' => [
+                    'id' => 512345678,
+                    'is_bot' => false,
+                    'first_name' => 'John',
+                    'language_code' => 'en',
+                ],
+                'message' => [
+                    'message_id' => 1842,
+                    'from' => [
+                        'id' => 7012345678,
+                        'is_bot' => true,
+                        'first_name' => 'SmartDiag',
+                        'username' => 'smartdiag_bot',
+                    ],
+                    'chat' => [
+                        'id' => 512345678,
+                        'first_name' => 'John',
+                        'type' => 'private',
+                    ],
+                    'date' => 1760280000,
+                    'text' => 'Choose an option',
+                    'reply_markup' => [
+                        'inline_keyboard' => [
+                            [
+                                ['text' => 'Yes', 'callback_data' => 'trigger__2021__a1b2c3__98765'],
+                            ],
+                        ],
+                    ],
+                ],
+                'chat_instance' => '-3456789012345678901',
+                'data' => 'trigger__2021__a1b2c3__98765',
+            ],
+        ],
+        'expectations' => [
+            ['field' => 'main_cond', 'payload' => 'full', 'expected' => true, 'note' => 'no root message.chat.type => negated condition is met'],
+            ['field' => 'main_cond', 'payload' => 'message', 'expected' => true],
+            ['field' => 'msg_cond', 'payload' => 'full', 'expected' => false, 'note' => 'callback query has no root message.text'],
+            ['field' => 'msg_btn_cond_1', 'payload' => 'full', 'expected' => true],
+            [
+                'field' => 'main_cond',
+                'conditions' => ['main_cond' => 'message.chat.type=supergroup'],
+                'payload' => 'full',
+                'expected' => false,
+                'note' => 'the positive form of the same condition would drop callback queries',
+            ],
+        ],
+        'attributes' => [
+            ['key' => 'nick', 'conditions' => ['nick' => 'callback_query.from.first_name'], 'expected' => 'John'],
+            ['key' => 'chat_id', 'conditions' => ['chat_id' => 'callback_query.message.chat.id'], 'expected' => 512345678],
+        ],
+    ],
+
+    'telegram_main_cond_supergroup' => [
+        'provider' => 'Telegram',
+        'description' => 'Supergroup message ignored by main_cond message.chat.type!=supergroup',
+        'conditions' => $telegramMainCondConditions,
+        'full_payload' => [
+            'update_id' => 586105899,
+            'message' => [
+                'message_id' => 39,
+                'from' => [
+                    'id' => 5071884088,
+                    'is_bot' => false,
+                    'first_name' => 'M',
+                    'last_name' => 'R',
+                    'username' => 'rajkicc',
+                    'language_code' => 'en',
+                ],
+                'chat' => [
+                    'id' => -2071698592261,
+                    'title' => 'Casino eXtreme Official Channel',
+                    'is_direct_messages' => true,
+                    'type' => 'supergroup',
+                ],
+                'date' => 1791962035,
+                'text' => 'hello',
+                'direct_messages_topic' => [
+                    'topic_id' => 5071884088,
+                    'user' => [
+                        'id' => 5071884088,
+                        'is_bot' => false,
+                        'first_name' => 'M',
+                        'last_name' => 'R',
+                        'username' => 'rajkicc',
+                        'language_code' => 'en',
+                    ],
+                ],
+            ],
+        ],
+        'message_payload' => [
+            'update_id' => 586105899,
+            'message' => [
+                'message_id' => 39,
+                'from' => [
+                    'id' => 5071884088,
+                    'is_bot' => false,
+                    'first_name' => 'M',
+                    'last_name' => 'R',
+                    'username' => 'rajkicc',
+                    'language_code' => 'en',
+                ],
+                'chat' => [
+                    'id' => -2071698592261,
+                    'title' => 'Casino eXtreme Official Channel',
+                    'is_direct_messages' => true,
+                    'type' => 'supergroup',
+                ],
+                'date' => 1791962035,
+                'text' => 'hello',
+                'direct_messages_topic' => [
+                    'topic_id' => 5071884088,
+                    'user' => [
+                        'id' => 5071884088,
+                        'is_bot' => false,
+                        'first_name' => 'M',
+                        'last_name' => 'R',
+                        'username' => 'rajkicc',
+                        'language_code' => 'en',
+                    ],
+                ],
+            ],
+        ],
+        'expectations' => [
+            ['field' => 'main_cond', 'payload' => 'full', 'expected' => false, 'note' => 'chat type equals supergroup => negated condition fails, webhook is ignored'],
+            ['field' => 'main_cond', 'payload' => 'message', 'expected' => false],
+            ['field' => 'msg_cond', 'payload' => 'full', 'expected' => true, 'note' => 'message conditions alone would still match, main_cond is what rejects it'],
+            [
+                'field' => 'main_cond',
+                'conditions' => ['main_cond' => 'message.chat.type!=supergroup,group'],
+                'payload' => 'full',
+                'expected' => false,
+                'note' => 'negated comma list: supergroup is in the list',
+            ],
+            [
+                'field' => 'main_cond',
+                'conditions' => ['main_cond' => 'message.chat.title!=Casino eXtreme Official Channel'],
+                'payload' => 'full',
+                'expected' => false,
+                'note' => 'negation compares the whole value, no partial matching'],
+        ],
+        'attributes' => [
+            ['key' => 'nick', 'conditions' => ['nick' => 'message.from.first_name'], 'expected' => 'M'],
+            ['key' => 'chat_id', 'conditions' => ['chat_id' => 'message.chat.id'], 'expected' => -2071698592261],
         ],
     ],
 

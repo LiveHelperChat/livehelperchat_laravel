@@ -144,6 +144,30 @@ class WebhookIncomingConditionsTest extends LegacyTestCase
         $this->checkCondition('main_cond', 'items.0.type= image,video', $p, false, 'comma list values are not trimmed (space on the matching value breaks it)');
         $this->checkCondition('main_cond', 'items.0.type=video,image', $p, true, 'comma list order does not matter');
 
+        // Negated comparison (attribute!=value) is met when the attribute is missing or its
+        // value does not match. This is what lets a webhook ignore a subset of payloads via
+        // main_cond, e.g. the Telegram config uses message.chat.type!=supergroup.
+        $this->checkCondition('main_cond', 'object!=page', $p, false, 'negated equality fails when the values are equal');
+        $this->checkCondition('main_cond', 'object!=instagram', $p, true, 'negated equality matches when the values differ');
+        $this->checkCondition('main_cond', 'nested.level1.level2!=deepvalue', $p, false, 'negated deep equality fails on an equal value');
+        $this->checkCondition('main_cond', 'nested.level1.level2!=othervalue', $p, true, 'negated deep equality matches on a different value');
+        $this->checkCondition('main_cond', 'nested.level1.missing!=page', $p, true, 'negated condition is met when the attribute is missing (found=false)');
+        $this->checkCondition('main_cond', 'count!=0', $p, false, 'negated numeric zero comparison when equal');
+        $this->checkCondition('main_cond', 'count!=1', $p, true, 'negated numeric zero comparison when different');
+        $this->checkCondition('main_cond', 'enabled!=true', $p, false, 'negated boolean literal true fails on a true payload value');
+        $this->checkCondition('main_cond', 'disabled!=true', $p, true, 'negated boolean literal true matches a false payload value');
+        $this->checkCondition('main_cond', 'status!=active,pending', $p, false, 'negated comma list: the value is in the list');
+        $this->checkCondition('main_cond', 'status!=closed,pending', $p, true, 'negated comma list: the value is not in the list');
+        $this->checkCondition('main_cond', 'items.0.type!=image', $p, false, 'negated array element comparison when equal');
+        $this->checkCondition('main_cond', 'items.1.type!=image', $p, true, 'negated array element comparison when different');
+        $this->checkCondition('main_cond', 'enabled!=__exists__', $p, false, 'negated __exists__ is false for a present attribute');
+        $this->checkCondition('main_cond', 'missing!=__exists__', $p, true, 'negated __exists__ is true for a missing attribute');
+        $this->checkCondition('main_cond', 'tags!=__exists__', $p, false, 'negated __exists__ is false for a present array attribute');
+        $this->checkCondition('main_cond', 'object!=instagram||status=active', $p, true, 'a negated pair can be combined with a normal pair');
+        $this->checkCondition('main_cond', 'object!=page||status=active', $p, false, 'negation applies only to its own || pair');
+        $this->checkCondition('main_cond', 'status=active||object!=instagram', $p, true, 'both pairs of a || list match');
+        $this->checkCondition('main_cond', 'status=closed||object!=instagram', $p, false, 'the normal pair fails before the negated pair is reached');
+
         // Condition field present but empty / falsy
         $this->assertFalse(
             \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', [], $p),
@@ -528,5 +552,104 @@ class WebhookIncomingConditionsTest extends LegacyTestCase
             $this->resolveFallbackChain('message_id_reply', $maxReplyCondition, $this->maxUpdatePayload('message_created', ['text' => 'no reply'])),
             'no reply candidate resolves for a plain message'
         );
+    }
+
+    // -----------------------------------------------------------------------
+    // 10. Telegram main_cond negation (message.chat.type!=supergroup)
+    //
+    // extension/lhctelegram/doc/telegram/incoming-webhook.json ships
+    //   main_cond = message.chat.type!=supergroup
+    // processEvent() evaluates main_cond first through isValidCondition() and rejects the
+    // whole payload ("Main conditions does not met!") when it is not met. This single
+    // condition is what keeps the bot out of Telegram supergroups while private chats and
+    // callback queries keep working.
+    // -----------------------------------------------------------------------
+    public function test_telegram_main_cond_negation()
+    {
+        $conditions = $this->fixtures['telegram_main_cond_private']['conditions'];
+
+        $this->assertSame(
+            'message.chat.type!=supergroup',
+            $conditions['main_cond'],
+            'fixtures use the main_cond shipped by the Telegram webhook configuration'
+        );
+
+        $mainCond = ['main_cond' => $conditions['main_cond']];
+
+        // Private chat: chat.type=private differs from supergroup -> accepted.
+        $privatePayload = $this->fixtures['telegram_main_cond_private']['full_payload'];
+        $this->assertTrue(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, $privatePayload),
+            'private chat is accepted (message.chat.type=private != supergroup)'
+        );
+
+        // Callback query: there is no root message.chat.type at all. A missing attribute
+        // counts as a match for a negated condition.
+        $callbackPayload = $this->fixtures['telegram_main_cond_callback']['full_payload'];
+        $this->assertTrue(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, $callbackPayload),
+            'callback query is accepted even though it has no root message.chat.type'
+        );
+        $this->assertFalse(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', ['main_cond' => 'message.chat.type=supergroup'], $callbackPayload),
+            'the positive form of the same condition would also drop callback queries'
+        );
+
+        // Supergroup: chat.type equals supergroup -> negated condition fails -> ignored.
+        $supergroupPayload = $this->fixtures['telegram_main_cond_supergroup']['full_payload'];
+        $this->assertFalse(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, $supergroupPayload),
+            'supergroup chat is rejected (message.chat.type=supergroup)'
+        );
+
+        // The message conditions themselves still match the supergroup payload, so main_cond
+        // is the only thing that rejects it (processEvent() throws before processMessage()).
+        $this->assertTrue(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('msg_cond', ['msg_cond' => $conditions['msg_cond']], $supergroupPayload),
+            'supergroup message matches msg_cond, main_cond is what rejects it'
+        );
+
+        // Same condition against the manually built MAX style payloads proves the negation is
+        // provider independent and that a missing attribute never throws.
+        $this->assertTrue(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, ['update_id' => 1]),
+            'payload without any message attribute is accepted by the negated condition'
+        );
+        $this->assertFalse(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, ['message' => ['chat' => ['type' => 'supergroup']]]),
+            'minimal supergroup payload is rejected'
+        );
+        $this->assertTrue(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, ['message' => ['chat' => ['type' => 'group']]]),
+            'group chats (not supergroups) are accepted'
+        );
+        $this->assertTrue(
+            \erLhcoreClassChatWebhookIncoming::isValidCondition('main_cond', $mainCond, ['message' => ['chat' => ['type' => 'Private']]]),
+            'negation is case sensitive, Private is not supergroup'
+        );
+    }
+
+    /**
+     * processEvent() evaluates main_cond before anything else, so a supergroup payload is
+     * rejected up front and never reaches the message handling (and the database).
+     */
+    public function test_main_cond_gate_rejects_payload_before_processing()
+    {
+        $webhook = new \stdClass();
+        $webhook->conditions_array = $this->fixtures['telegram_main_cond_supergroup']['conditions'];
+
+        try {
+            \erLhcoreClassChatWebhookIncoming::processEvent(
+                $webhook,
+                $this->fixtures['telegram_main_cond_supergroup']['full_payload']
+            );
+            $this->fail('processEvent() must reject the supergroup payload');
+        } catch (\Exception $e) {
+            $this->assertStringStartsWith(
+                'Main conditions does not met!',
+                $e->getMessage(),
+                'processEvent() stops on main_cond before processing the payload'
+            );
+        }
     }
 }
