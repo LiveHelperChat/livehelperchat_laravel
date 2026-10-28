@@ -51,6 +51,7 @@ CREATE TABLE `lhc_mailconv_conversation` (
   PRIMARY KEY (`id`),
   KEY `lang` (`lang`),
   KEY `from_address` (`from_address`),
+  KEY `from_address_clean` (`from_address_clean`),
   KEY `mailbox_id` (`mailbox_id`),
   KEY `dep_id` (`dep_id`),
   KEY `mailbox_id_status_udate` (`mailbox_id`,`status`,`udate`),
@@ -61,16 +62,13 @@ CREATE TABLE `lhc_mailconv_conversation` (
   KEY `user_id_status` (`user_id`,`status`),
   KEY `status_dep_id` (`status`,`dep_id`),
   KEY `undelivered` (`undelivered`),
-  KEY `phone` (`phone`),
-  KEY `from_address_clean` (`from_address_clean`)
+  KEY `phone` (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lhc_mailconv_delete_filter`;
 CREATE TABLE `lhc_mailconv_delete_filter` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `delete_policy` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `processed_records` bigint(20) unsigned NOT NULL DEFAULT 0,
   `updated_at` bigint(20) unsigned NOT NULL,
   `created_at` bigint(20) unsigned NOT NULL,
   `user_id` bigint(20) unsigned NOT NULL,
@@ -79,6 +77,8 @@ CREATE TABLE `lhc_mailconv_delete_filter` (
   `last_id` bigint(20) unsigned NOT NULL DEFAULT 0,
   `started_at` bigint(20) unsigned NOT NULL DEFAULT 0,
   `finished_at` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `processed_records` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `delete_policy` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `filter` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `filter_input` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
@@ -107,15 +107,17 @@ CREATE TABLE `lhc_mailconv_file` (
   `description` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `extension` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attachment_id` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `attachment_id` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `file_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `file_name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content_id` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `disposition` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `conversation_id` bigint(20) unsigned NOT NULL,
-  `meta_msg` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `width` int(11) unsigned NOT NULL DEFAULT 0,
-  `height` int(11) unsigned NOT NULL DEFAULT 0,
+  `meta_msg` longtext NOT NULL,
+  `width` int(11) unsigned NOT NULL DEFAULT '0',
+  `height` int(11) unsigned NOT NULL DEFAULT '0',
+  `caption` text NOT NULL,
+  `caption_ocr` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `message_id` (`message_id`),
   KEY `conversation_id` (`conversation_id`)
@@ -125,8 +127,6 @@ CREATE TABLE `lhc_mailconv_file` (
 DROP TABLE IF EXISTS `lhc_mailconv_mailbox`;
 CREATE TABLE `lhc_mailconv_mailbox` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `delete_on_archive` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `delete_policy` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `mail` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -154,13 +154,15 @@ CREATE TABLE `lhc_mailconv_mailbox` (
   `create_a_copy` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `import_priority` int(11) unsigned NOT NULL DEFAULT 0,
   `assign_parent_user` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `mail_smtp` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name_smtp` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `username_smtp` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password_smtp` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mail_smtp` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_smtp` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username_smtp` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password_smtp` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `no_pswd_smtp` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `auth_method` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `auth_method` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `reopen_reset` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `delete_on_archive` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `delete_policy` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `last_process_time` bigint(20) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `active` (`active`)
@@ -213,7 +215,7 @@ CREATE TABLE `lhc_mailconv_mailing_campaign_recipient` (
   PRIMARY KEY (`id`),
   KEY `message_id` (`message_id`),
   KEY `campaign_id_status` (`campaign_id`,`status`),
-  KEY `campaign_id_email` (`campaign_id`,`email`)
+  KEY `campaign_id_email` (`campaign_id`, `email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -251,7 +253,7 @@ CREATE TABLE `lhc_mailconv_match_rule` (
   `priority` int(11) NOT NULL,
   `priority_rule` int(11) NOT NULL,
   `options` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `active_priority` (`active`,`priority`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -260,16 +262,14 @@ CREATE TABLE `lhc_mailconv_match_rule` (
 DROP TABLE IF EXISTS `lhc_mailconv_msg`;
 CREATE TABLE `lhc_mailconv_msg` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `priority` int(11) NOT NULL DEFAULT 0,
-  `is_external` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `message_hash` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int(11) unsigned NOT NULL,
-  `opened_at` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `conversation_id_old` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `opened_at` bigint(20) unsigned NOT NULL DEFAULT '0',
   `conversation_id` bigint(20) unsigned NOT NULL,
-  `lang` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `conversation_id_old` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `message_hash` varchar(40) NOT NULL,
   `message_id` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `in_reply_to` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lang` varchar(5) COLLATE utf8mb4_unicode_ci NOT NULL,
   `subject` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `body` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `alt_body` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -293,11 +293,13 @@ CREATE TABLE `lhc_mailconv_msg` (
   `mailbox_id` bigint(20) unsigned NOT NULL,
   `response_time` bigint(20) unsigned NOT NULL,
   `cls_time` bigint(20) unsigned NOT NULL,
+  `priority` int(11) NOT NULL DEFAULT 0,
+  `is_external` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `wait_time` bigint(20) unsigned NOT NULL,
   `accept_time` bigint(20) unsigned NOT NULL,
   `interaction_time` bigint(20) NOT NULL,
-  `conv_user_id` bigint(20) unsigned NOT NULL DEFAULT 0,
   `user_id` bigint(20) unsigned NOT NULL,
+  `conv_user_id` bigint(20) unsigned NOT NULL DEFAULT 0,
   `lr_time` bigint(20) unsigned NOT NULL,
   `response_type` int(11) unsigned NOT NULL,
   `bcc_data` text COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -309,16 +311,17 @@ CREATE TABLE `lhc_mailconv_msg` (
   `undelivered` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `rfc822_body` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `delivery_status` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `auto_submitted` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
+  KEY `message_hash` (`message_hash`),
+  KEY `lang` (`lang`),
   KEY `message_id` (`message_id`),
   KEY `response_type` (`response_type`),
   KEY `user_id` (`user_id`),
-  KEY `conversation_id_old` (`conversation_id_old`),
   KEY `conversation_id` (`conversation_id`),
+  KEY `conversation_id_old` (`conversation_id_old`),
   KEY `mailbox_id` (`mailbox_id`),
   KEY `dep_id` (`dep_id`),
-  KEY `message_hash` (`message_hash`),
-  KEY `lang` (`lang`),
   KEY `has_attachment` (`has_attachment`),
   KEY `udate` (`udate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -379,7 +382,7 @@ CREATE TABLE `lhc_mailconv_oauth_ms` (
   PRIMARY KEY (`id`),
   KEY `oauth_uid` (`oauth_uid`),
   KEY `user_id_completed` (`mailbox_id`,`completed`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lhc_mailconv_personal_mailbox_group`;
@@ -398,8 +401,8 @@ CREATE TABLE `lhc_mailconv_recipient` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `data` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `disabled` tinyint(1) NOT NULL DEFAULT 0,
-  `mailbox` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mailbox` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `attr_str_1` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `attr_str_2` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -408,8 +411,8 @@ CREATE TABLE `lhc_mailconv_recipient` (
   `attr_str_5` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `attr_str_6` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `email` (`email`),
-  KEY `disabled` (`disabled`)
+  KEY `disabled` (`disabled`),
+  KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -471,59 +474,76 @@ CREATE TABLE `lhc_mailconv_sent_copy` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `lhc_mailconv_pending_import`;
+CREATE TABLE `lhc_mailconv_pending_import` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` bigint(20) unsigned NOT NULL,
+  `mailbox_id` int(11) unsigned NOT NULL,
+  `status` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `attempt` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `last_failure` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` int(11) unsigned NOT NULL,
+  `updated_at` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `mailbox_id_uid` (`mailbox_id`,`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `lh_abstract_auto_responder`;
 CREATE TABLE `lh_abstract_auto_responder` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `siteaccess` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `wait_message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `siteaccess` varchar(3) NOT NULL,
+  `wait_message` text NOT NULL,
   `wait_timeout` int(11) NOT NULL,
   `position` int(11) NOT NULL,
-  `timeout_message` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bot_configuration` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_message` text NOT NULL,
+  `bot_configuration` text NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `operator` varchar(50) NOT NULL,
   `dep_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `only_proactive` int(11) NOT NULL,
-  `repeat_number` int(11) NOT NULL DEFAULT 1,
-  `survey_timeout` int(11) NOT NULL DEFAULT 0,
-  `survey_id` int(11) NOT NULL DEFAULT 0,
+  `repeat_number` int(11) NOT NULL DEFAULT '1',
+  `survey_timeout` int(11) NOT NULL DEFAULT '0',
+  `survey_id` int(11) NOT NULL DEFAULT '0',
+  `disabled` tinyint(1) NOT NULL DEFAULT '0',
   `wait_timeout_hold_1` int(11) NOT NULL,
   `wait_timeout_hold_2` int(11) NOT NULL,
   `wait_timeout_hold_3` int(11) NOT NULL,
   `wait_timeout_hold_4` int(11) NOT NULL,
   `wait_timeout_hold_5` int(11) NOT NULL,
-  `timeout_hold_message_1` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `timeout_hold_message_2` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `timeout_hold_message_3` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `timeout_hold_message_4` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `timeout_hold_message_5` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `wait_timeout_hold` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_hold_message_1` text NOT NULL,
+  `timeout_hold_message_2` text NOT NULL,
+  `timeout_hold_message_3` text NOT NULL,
+  `timeout_hold_message_4` text NOT NULL,
+  `timeout_hold_message_5` text NOT NULL,
+  `wait_timeout_hold` text NOT NULL,
   `wait_timeout_2` int(11) NOT NULL,
-  `timeout_message_2` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_message_2` text NOT NULL,
   `wait_timeout_3` int(11) NOT NULL,
-  `timeout_message_3` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_message_3` text NOT NULL,
   `wait_timeout_4` int(11) NOT NULL,
-  `timeout_message_4` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_message_4` text NOT NULL,
   `wait_timeout_5` int(11) NOT NULL,
-  `timeout_message_5` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_message_5` text NOT NULL,
   `wait_timeout_reply_1` int(11) NOT NULL,
-  `timeout_reply_message_1` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_reply_message_1` text NOT NULL,
   `wait_timeout_reply_2` int(11) NOT NULL,
-  `timeout_reply_message_2` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_reply_message_2` text NOT NULL,
   `wait_timeout_reply_3` int(11) NOT NULL,
-  `timeout_reply_message_3` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_reply_message_3` text NOT NULL,
   `wait_timeout_reply_4` int(11) NOT NULL,
-  `timeout_reply_message_4` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_reply_message_4` text NOT NULL,
   `wait_timeout_reply_5` int(11) NOT NULL,
-  `timeout_reply_message_5` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `languages` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `timeout_reply_message_5` text NOT NULL,
+  `languages` text NOT NULL,
   `ignore_pa_chat` int(11) NOT NULL,
-  `disabled` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `siteaccess_position` (`siteaccess`,`position`),
   KEY `disabled` (`disabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_auto_responder_chat`;
@@ -536,7 +556,7 @@ CREATE TABLE `lh_abstract_auto_responder_chat` (
   `active_send_status` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_auto_responder_dep`;
@@ -553,36 +573,42 @@ CREATE TABLE `lh_abstract_auto_responder_dep` (
 DROP TABLE IF EXISTS `lh_abstract_browse_offer_invitation`;
 CREATE TABLE `lh_abstract_browse_offer_invitation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `siteaccess` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `siteaccess` varchar(10) NOT NULL,
   `time_on_site` int(11) NOT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `callback_content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext NOT NULL,
+  `callback_content` longtext NOT NULL,
   `lhc_iframe_content` tinyint(4) NOT NULL,
-  `custom_iframe_url` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `custom_iframe_url` varchar(250) NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `identifier` varchar(50) NOT NULL,
   `executed_times` int(11) NOT NULL,
-  `url` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(250) NOT NULL,
   `active` int(11) NOT NULL,
   `has_url` int(11) NOT NULL,
   `is_wildcard` int(11) NOT NULL,
-  `referrer` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `priority` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hash` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `referrer` varchar(250) NOT NULL,
+  `priority` varchar(250) NOT NULL,
+  `hash` varchar(40) NOT NULL,
   `width` int(11) NOT NULL,
   `height` int(11) NOT NULL,
-  `unit` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit` varchar(10) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `active` (`active`),
   KEY `identifier` (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_chat_alert_icon`;
 CREATE TABLE `lh_abstract_chat_alert_icon` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -594,20 +620,23 @@ CREATE TABLE `lh_abstract_chat_column` (
   `variable` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `position` int(11) NOT NULL,
   `enabled` tinyint(1) NOT NULL,
-  `online_enabled` tinyint(1) NOT NULL,
-  `chat_enabled` tinyint(1) NOT NULL,
   `conditions` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `column_icon` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `column_identifier` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `chat_enabled` tinyint(1) NOT NULL,
+  `online_enabled` tinyint(1) NOT NULL,
   `icon_mode` tinyint(1) NOT NULL DEFAULT 0,
   `has_popup` tinyint(1) NOT NULL DEFAULT 0,
-  `chat_window_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `popup_content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `sort_column` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `sort_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `chat_list_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `mail_list_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `mail_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `chat_window_enabled` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `enabled` (`enabled`),
   KEY `online_enabled` (`online_enabled`),
@@ -620,13 +649,16 @@ DROP TABLE IF EXISTS `lh_abstract_chat_priority`;
 CREATE TABLE `lh_abstract_chat_priority` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role_destination` varchar(50) NOT NULL,
+  `present_role_is` varchar(50) NOT NULL,
   `dep_id` int(11) NOT NULL,
   `dest_dep_id` int(11) NOT NULL DEFAULT 0,
   `sort_priority` int(11) NOT NULL DEFAULT 0,
   `priority` int(11) NOT NULL,
-  `skip_bot` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `role_destination` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `present_role_is` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `skip_bot` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -635,44 +667,74 @@ CREATE TABLE `lh_abstract_chat_priority` (
 DROP TABLE IF EXISTS `lh_abstract_chat_variable`;
 CREATE TABLE `lh_abstract_chat_variable` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `var_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `var_identifier` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content_field` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `var_name` varchar(255) NOT NULL,
+  `case_insensitive` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `try_decrypt` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `var_identifier` varchar(255) NOT NULL,
   `inv` tinyint(1) NOT NULL,
-  `change_message` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `old_js_id` varchar(50) NOT NULL,
+  `change_message` varchar(250) NOT NULL,
   `type` tinyint(1) NOT NULL,
   `persistent` tinyint(1) NOT NULL,
-  `js_variable` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `js_variable` varchar(255) NOT NULL,
   `dep_id` int(11) NOT NULL,
-  `try_decrypt` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `case_insensitive` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `old_js_id` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content_field` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `lh_abstract_content_chunk`;
+CREATE TABLE `lh_abstract_content_chunk` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL,
+  `in_active` tinyint(1) NOT NULL DEFAULT 0,
+  `identifier` varchar(50) NOT NULL,
+  `content` longtext NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `identifier` (`identifier`, `in_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `lh_abstract_content_chunk_dep`;
+CREATE TABLE `lh_abstract_content_chunk_dep` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `chunk_id` bigint(20) NOT NULL,
+  `dep_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `chunk_id` (`chunk_id`),
+  KEY `dep_id` (`dep_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `lh_abstract_email_template`;
 CREATE TABLE `lh_abstract_email_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `from_name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `from_name` varchar(150) NOT NULL,
   `from_name_ac` tinyint(4) NOT NULL,
-  `from_email` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `from_email` varchar(150) NOT NULL,
   `from_email_ac` tinyint(4) NOT NULL,
   `user_mail_as_sender` tinyint(4) NOT NULL,
-  `use_chat_locale` tinyint(1) NOT NULL DEFAULT 0,
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `translations` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `subject` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bcc_recipients` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `use_chat_locale` tinyint(1) NOT NULL DEFAULT '0',
+  `only_recipient` tinyint(1) NOT NULL DEFAULT '0',
+  `content` text NOT NULL,
+  `translations` longtext NOT NULL,
+  `subject` varchar(250) NOT NULL,
+  `bcc_recipients` varchar(200) NOT NULL,
   `subject_ac` tinyint(4) NOT NULL,
-  `reply_to` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reply_to` varchar(150) NOT NULL,
   `reply_to_ac` tinyint(4) NOT NULL,
-  `recipient` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `only_recipient` tinyint(1) NOT NULL DEFAULT 0,
+  `recipient` varchar(150) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_abstract_email_template` (`id`, `name`, `from_name`, `from_name_ac`, `from_email`, `from_email_ac`, `user_mail_as_sender`, `use_chat_locale`, `content`, `translations`, `subject`, `bcc_recipients`, `subject_ac`, `reply_to`, `reply_to_ac`, `recipient`, `only_recipient`) VALUES
 (1,	'Send mail to user',	'Live Helper Chat',	0,	'',	0,	0,	0,	'Dear {user_chat_nick},\r\n\r\n{additional_message}\r\n\r\nLive Support response:\r\n{messages_content}\r\n\r\nSincerely,\r\nLive Support Team\r\n',	'',	'{name_surname} has responded to your request',	'',	1,	'',	1,	'',	0),
@@ -692,18 +754,23 @@ INSERT INTO `lh_abstract_email_template` (`id`, `name`, `from_name`, `from_name_
 DROP TABLE IF EXISTS `lh_abstract_form`;
 CREATE TABLE `lh_abstract_form` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `recipient` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `content` longtext NOT NULL,
+  `configuration` longtext NOT NULL,
+  `recipient` varchar(250) NOT NULL,
   `active` int(11) NOT NULL,
-  `name_attr` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `intro_attr` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `xls_columns` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pagelayout` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `post_content` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_attr` varchar(250) NOT NULL,
+  `intro_attr` varchar(400) NOT NULL,
+  `xls_columns` text NOT NULL,
+  `pagelayout` varchar(200) NOT NULL,
+  `post_content` text NOT NULL,
+  `form_type` tinyint(1) NOT NULL DEFAULT 0,
+  `agent_evaluation` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_form_collected`;
@@ -711,39 +778,79 @@ CREATE TABLE `lh_abstract_form_collected` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `form_id` int(11) NOT NULL,
   `ctime` int(11) NOT NULL,
-  `ip` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identifier` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varchar(250) NOT NULL,
+  `identifier` varchar(250) NOT NULL,
   `chat_id` bigint(20) NOT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `custom_fields` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext NOT NULL,
+  `custom_fields` longtext NOT NULL,
+  `user_id` bigint(20) NOT NULL DEFAULT 0,
+  `evaluated_user_id` bigint(20) NOT NULL DEFAULT 0,
+  `scope` tinyint(1) NOT NULL DEFAULT 0,
+  `attr_int_1` int(11) NOT NULL DEFAULT 0,
+  `attr_int_2` int(11) NOT NULL DEFAULT 0,
+  `attr_int_3` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `form_id` (`form_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `form_id_chat_id` (`form_id`,`chat_id`),
+  KEY `chat_id` (`chat_id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `lh_abstract_msg_protection`;
 CREATE TABLE `lh_abstract_msg_protection` (
-                                              `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                                              `pattern` text COLLATE utf8mb4_unicode_ci NOT NULL,
-                                              `enabled` int(11) NOT NULL DEFAULT 1,
-                                              `remove` int(11) NOT NULL DEFAULT 0,
-                                              `v_warning` text COLLATE utf8mb4_unicode_ci NOT NULL,
-                                              `rule_type` tinyint(1) unsigned NOT NULL DEFAULT 0,
-                                              `has_dep` tinyint(1) unsigned NOT NULL DEFAULT 0,
-                                              `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-                                              `dep_ids` text COLLATE utf8mb4_unicode_ci NOT NULL,
-                                              `languages` text COLLATE utf8mb4_unicode_ci NOT NULL,
-                                              PRIMARY KEY (`id`),
-                                              KEY `enabled_type` (`enabled`,`rule_type`)
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pattern` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `enabled` int(11) NOT NULL DEFAULT 1,
+  `remove` int(11) NOT NULL DEFAULT 0,
+  `v_warning` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `languages` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rule_type` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `has_dep` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dep_ids` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `enabled_type` (`enabled`,`rule_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_abstract_msg_protection` (`id`, `pattern`, `enabled`, `remove`, `v_warning`, `rule_type`, `has_dep`, `name`, `dep_ids`, `languages`) VALUES
     (1,	'[{\"type\":\"pii\",\"entities\":[\"EMAIL_ADDRESS\",\"CREDIT_CARD\",\"IBAN_CODE\",\"IP_ADDRESS\"]},{\"type\":\"urls\",\"allowedSchemes\":[\"https\"],\"blockUserinfo\":true,\"allowSubdomains\":false,\"allowList\":[\"example.com\"]},{\"type\":\"secret_keys\",\"threshold\":\"balanced\"}]',	1,	0,	'[html]<div class=\"fs14 text-danger fw-bold fst-italic\">For your protection, we ask that you do not share full credit numbers unless speaking directly with a processing agent.</div>[/html]',	2,	1,	'Visitor to operator',	'[1,28,20]',	'');
 
+DROP TABLE IF EXISTS `lh_abstract_performance`;
+CREATE TABLE `lh_abstract_performance` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `type` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `created_at` bigint(20) unsigned NOT NULL,
+  `data` longtext NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `type_id` (`type`,`id` DESC),
+  KEY `created_at` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `lh_abstract_offline_reason`;
+CREATE TABLE `lh_abstract_offline_reason` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(250) NOT NULL,
+  `description` text NOT NULL,
+  `icon` varchar(250) NOT NULL,
+  `pos` int(11) unsigned NOT NULL DEFAULT 0,
+  `mode` tinyint(1) NOT NULL DEFAULT 0,
+  `disable_auto_assign` tinyint(1) NOT NULL DEFAULT 0,
+  `disable_transfer` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `lh_abstract_proactive_chat_campaign`;
 CREATE TABLE `lh_abstract_proactive_chat_campaign` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `text` text NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -767,13 +874,14 @@ CREATE TABLE `lh_abstract_proactive_chat_campaign_conv` (
   `conv_event` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `unique_id` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `ctime` (`ctime`),
+  KEY `inv_vid` (`invitation_id`,`invitation_status`,`vid_id`),
   KEY `campaign_id` (`campaign_id`),
   KEY `invitation_status` (`invitation_status`),
+  KEY `ctime` (`ctime`),
   KEY `invitation_id_variation_id` (`invitation_id`,`variation_id`),
-  KEY `conv_event_vid_id` (`conv_event`,`vid_id`),
   KEY `unique_id` (`unique_id`),
-  KEY `conv_int_time` (`conv_int_time`)
+  KEY `conv_int_time` (`conv_int_time`),
+  KEY `conv_event_vid_id` (`conv_event`,`vid_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -783,21 +891,24 @@ CREATE TABLE `lh_abstract_proactive_chat_event` (
   `vid_id` int(11) NOT NULL,
   `ev_id` int(11) NOT NULL,
   `ts` int(11) NOT NULL,
-  `val` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `val` varchar(50) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `vid_id_ev_id_val_ts` (`vid_id`,`ev_id`,`val`,`ts`),
   KEY `vid_id_ev_id_ts` (`vid_id`,`ev_id`,`ts`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_proactive_chat_invitation`;
 CREATE TABLE `lh_abstract_proactive_chat_invitation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `siteaccess` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `siteaccess` varchar(10) NOT NULL,
   `time_on_site` int(11) NOT NULL,
   `pageviews` int(11) NOT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `message_returning` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text NOT NULL,
+  `message_returning` text NOT NULL,
   `executed_times` int(11) NOT NULL,
   `dep_id` int(11) NOT NULL,
   `hide_after_ntimes` int(11) NOT NULL,
@@ -808,12 +919,12 @@ CREATE TABLE `lh_abstract_proactive_chat_invitation` (
   `autoresponder_id` int(11) NOT NULL,
   `disabled` int(11) NOT NULL,
   `inject_only_html` tinyint(1) NOT NULL,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_ids` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `message_returning_nick` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `referrer` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `operator_ids` varchar(100) NOT NULL,
+  `message_returning_nick` varchar(250) NOT NULL,
+  `referrer` varchar(250) NOT NULL,
   `show_random_operator` int(11) NOT NULL,
-  `operator_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `operator_name` varchar(100) NOT NULL,
   `campaign_id` int(11) NOT NULL,
   `position` int(11) NOT NULL,
   `event_invitation` int(11) NOT NULL,
@@ -821,29 +932,32 @@ CREATE TABLE `lh_abstract_proactive_chat_invitation` (
   `bot_id` int(11) NOT NULL,
   `trigger_id` int(11) NOT NULL,
   `bot_offline` tinyint(1) NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tag` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `tag` varchar(50) NOT NULL,
   `requires_email` int(11) NOT NULL,
   `iddle_for` int(11) NOT NULL,
   `event_type` int(11) NOT NULL,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
   `requires_username` int(11) NOT NULL,
   `requires_phone` int(11) NOT NULL,
-  `design_data` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `design_data` longtext NOT NULL,
   `active_from` bigint(20) unsigned NOT NULL DEFAULT 0,
   `active_to` bigint(20) unsigned NOT NULL DEFAULT 0,
   `repetitiveness` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `days_activity` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `url_present` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` int(11) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `time_on_site_pageviews_siteaccess_position` (`time_on_site`,`pageviews`,`siteaccess`,`identifier`,`position`),
   KEY `identifier` (`identifier`),
   KEY `dynamic_invitation` (`dynamic_invitation`),
   KEY `tag` (`tag`),
+  KEY `parent_id` (`parent_id`),
   KEY `show_on_mobile` (`show_on_mobile`),
-  KEY `dep_id` (`dep_id`),
-  KEY `parent_id` (`parent_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `dep_id` (`dep_id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_proactive_chat_invitation_dep`;
@@ -867,31 +981,47 @@ CREATE TABLE `lh_abstract_proactive_chat_invitation_event` (
   PRIMARY KEY (`id`),
   KEY `invitation_id` (`invitation_id`),
   KEY `event_id` (`event_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+DROP TABLE IF EXISTS `lh_abstract_proactive_chat_invitation_one_time`;
+CREATE TABLE `lh_abstract_proactive_chat_invitation_one_time` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `invitation_id` bigint(20) unsigned NOT NULL,
+  `vid_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `invitation_id_vid_id` (`invitation_id`,`vid_id`),
+  KEY `vid_id` (`vid_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `lh_abstract_proactive_chat_variables`;
 CREATE TABLE `lh_abstract_proactive_chat_variables` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `identifier` varchar(50) NOT NULL,
   `store_timeout` int(11) NOT NULL,
-  `filter_val` int(11) NOT NULL DEFAULT 0,
+  `filter_val` int(11) NOT NULL DEFAULT '0',
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `identifier` (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_product`;
 CREATE TABLE `lh_abstract_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(250) NOT NULL,
   `disabled` int(11) NOT NULL,
   `priority` int(11) NOT NULL,
   `departament_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `departament_id` (`departament_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
+  KEY `departament_id` (`departament_id`),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_product_departament`;
@@ -901,16 +1031,19 @@ CREATE TABLE `lh_abstract_product_departament` (
   `departament_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `departament_id` (`departament_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_rest_api_key`;
 CREATE TABLE `lh_abstract_rest_api_key` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `api_key` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` int(11) NOT NULL DEFAULT 0,
-  `active` int(11) NOT NULL DEFAULT 0,
-  `ip_restrictions` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `api_key` varchar(50) NOT NULL,
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `active` int(11) NOT NULL DEFAULT '0',
+  `ip_restrictions` varchar(250) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `api_key` (`api_key`),
   KEY `user_id` (`user_id`)
@@ -920,12 +1053,15 @@ CREATE TABLE `lh_abstract_rest_api_key` (
 DROP TABLE IF EXISTS `lh_abstract_rest_api_key_remote`;
 CREATE TABLE `lh_abstract_rest_api_key_remote` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `api_key` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `host` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `active` tinyint(1) NOT NULL DEFAULT 0,
-  `position` int(11) NOT NULL DEFAULT 0,
+  `api_key` varchar(50) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `host` varchar(250) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT '0',
+  `position` int(11) NOT NULL DEFAULT '0',
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `active` (`active`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -937,8 +1073,8 @@ CREATE TABLE `lh_abstract_saved_report` (
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `params` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `send_log` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `recurring_options` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `send_log` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint(20) unsigned NOT NULL,
   `position` int(11) unsigned NOT NULL,
   `days` int(11) unsigned NOT NULL,
@@ -963,9 +1099,9 @@ CREATE TABLE `lh_abstract_saved_search` (
   `requested_at` bigint(20) unsigned NOT NULL,
   `total_records` bigint(20) unsigned NOT NULL,
   `passive` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `sharer_user_id` bigint(20) unsigned NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `scope` (`scope`),
   KEY `updated_at` (`updated_at`),
@@ -980,10 +1116,10 @@ CREATE TABLE `lh_abstract_stats` (
   `type` int(11) NOT NULL,
   `lupdate` bigint(20) NOT NULL,
   `object_id` bigint(20) NOT NULL,
-  `stats` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `stats` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `type_object_id` (`type`,`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_subject`;
@@ -991,13 +1127,19 @@ CREATE TABLE `lh_abstract_subject` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `internal` tinyint(1) NOT NULL DEFAULT 0,
-  `internal_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `internal_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `color` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `pinned` tinyint(1) NOT NULL DEFAULT 0,
+  `archive` tinyint(1) NOT NULL DEFAULT 0,
   `widgets` int(11) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
+  KEY `archive` (`archive`),
   KEY `internal` (`internal`),
-  KEY `internal_type` (`internal_type`)
+  KEY `internal_type` (`internal_type`),
+  KEY `widgets` (`widgets`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -1024,46 +1166,46 @@ CREATE TABLE `lh_abstract_subject_dep` (
 DROP TABLE IF EXISTS `lh_abstract_survey`;
 CREATE TABLE `lh_abstract_survey` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `feedback_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `max_stars_1_title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `feedback_text` text NOT NULL,
+  `max_stars_1_title` varchar(250) NOT NULL,
   `max_stars_1_pos` int(11) NOT NULL,
-  `max_stars_2_title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `max_stars_2_title` varchar(250) NOT NULL,
   `max_stars_2_pos` int(11) NOT NULL,
   `max_stars_2` int(11) NOT NULL,
-  `max_stars_3_title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `max_stars_3_title` varchar(250) NOT NULL,
   `max_stars_3_pos` int(11) NOT NULL,
   `max_stars_3` int(11) NOT NULL,
-  `max_stars_4_title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `max_stars_4_title` varchar(250) NOT NULL,
   `max_stars_4_pos` int(11) NOT NULL,
   `max_stars_4` int(11) NOT NULL,
-  `max_stars_5_title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `max_stars_5_title` varchar(250) NOT NULL,
   `max_stars_5_pos` int(11) NOT NULL,
   `max_stars_5` int(11) NOT NULL,
-  `question_options_1` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_options_1_items` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_options_1` varchar(250) NOT NULL,
+  `question_options_1_items` text NOT NULL,
   `question_options_1_pos` int(11) NOT NULL,
-  `question_options_2` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_options_2_items` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_options_2` varchar(250) NOT NULL,
+  `question_options_2_items` text NOT NULL,
   `question_options_2_pos` int(11) NOT NULL,
-  `question_options_3` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_options_3_items` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_options_3` varchar(250) NOT NULL,
+  `question_options_3_items` text NOT NULL,
   `question_options_3_pos` int(11) NOT NULL,
-  `question_options_4` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_options_4_items` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_options_4` varchar(250) NOT NULL,
+  `question_options_4_items` text NOT NULL,
   `question_options_4_pos` int(11) NOT NULL,
-  `question_options_5` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_options_5_items` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_options_5` varchar(250) NOT NULL,
+  `question_options_5_items` text NOT NULL,
   `question_options_5_pos` int(11) NOT NULL,
-  `question_plain_1` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_plain_1` text NOT NULL,
   `question_plain_1_pos` int(11) NOT NULL,
-  `question_plain_2` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_plain_2` text NOT NULL,
   `question_plain_2_pos` int(11) NOT NULL,
-  `question_plain_3` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_plain_3` text NOT NULL,
   `question_plain_3_pos` int(11) NOT NULL,
-  `question_plain_4` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_plain_4` text NOT NULL,
   `question_plain_4_pos` int(11) NOT NULL,
-  `question_plain_5` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_plain_5` text NOT NULL,
   `question_plain_5_pos` int(11) NOT NULL,
   `max_stars_1_enabled` int(11) NOT NULL,
   `max_stars_2_enabled` int(11) NOT NULL,
@@ -1096,18 +1238,21 @@ CREATE TABLE `lh_abstract_survey` (
   `question_plain_3_req` int(11) NOT NULL,
   `question_plain_4_req` int(11) NOT NULL,
   `question_plain_5_req` int(11) NOT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `configuration` longtext NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `identifier` (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_survey_item`;
 CREATE TABLE `lh_abstract_survey_item` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `survey_id` int(11) NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 0,
+  `status` int(11) NOT NULL DEFAULT '0',
   `chat_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `ftime` int(11) NOT NULL,
@@ -1122,13 +1267,14 @@ CREATE TABLE `lh_abstract_survey_item` (
   `question_options_3` int(11) NOT NULL,
   `question_options_4` int(11) NOT NULL,
   `question_options_5` int(11) NOT NULL,
-  `question_plain_1` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_plain_2` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_plain_3` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_plain_4` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question_plain_5` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question_plain_1` text NOT NULL,
+  `question_plain_2` text NOT NULL,
+  `question_plain_3` text NOT NULL,
+  `question_plain_4` text NOT NULL,
+  `question_plain_5` text NOT NULL,
   `online_user_id` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`),
+  KEY `online_user_id` (`online_user_id`),
   KEY `survey_id` (`survey_id`),
   KEY `chat_id` (`chat_id`),
   KEY `user_id` (`user_id`),
@@ -1143,100 +1289,102 @@ CREATE TABLE `lh_abstract_survey_item` (
   KEY `question_options_2` (`question_options_2`),
   KEY `question_options_3` (`question_options_3`),
   KEY `question_options_4` (`question_options_4`),
-  KEY `question_options_5` (`question_options_5`),
-  KEY `online_user_id` (`online_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `question_options_5` (`question_options_5`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_abstract_widget_theme`;
 CREATE TABLE `lh_abstract_widget_theme` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(250) NOT NULL,
-  `name_company` text NOT NULL,
-  `onl_bcolor` varchar(10) NOT NULL,
-  `bor_bcolor` varchar(10) NOT NULL DEFAULT 'e3e3e3',
-  `text_color` varchar(10) NOT NULL,
-  `online_image` varchar(250) NOT NULL,
-  `online_image_path` varchar(250) NOT NULL,
-  `offline_image` varchar(250) NOT NULL,
-  `offline_image_path` varchar(250) NOT NULL,
-  `logo_image` varchar(250) NOT NULL,
-  `logo_image_path` varchar(250) NOT NULL,
-  `need_help_image` varchar(250) NOT NULL,
-  `header_background` varchar(10) NOT NULL,
-  `need_help_tcolor` varchar(10) NOT NULL,
-  `need_help_bcolor` varchar(10) NOT NULL,
-  `need_help_border` varchar(10) NOT NULL,
-  `need_help_close_bg` varchar(10) NOT NULL,
-  `need_help_hover_bg` varchar(10) NOT NULL,
-  `need_help_close_hover_bg` varchar(10) NOT NULL,
-  `need_help_image_path` varchar(250) NOT NULL,
-  `custom_status_css` mediumtext NOT NULL,
-  `custom_container_css` mediumtext NOT NULL,
-  `custom_widget_css` mediumtext NOT NULL,
-  `need_help_header` text NOT NULL,
-  `need_help_text` text NOT NULL,
-  `online_text` text NOT NULL,
-  `offline_text` text NOT NULL,
-  `widget_border_color` varchar(10) NOT NULL,
-  `copyright_image` varchar(250) NOT NULL,
-  `copyright_image_path` varchar(250) NOT NULL,
-  `widget_copyright_url` text NOT NULL,
+  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_company` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `onl_bcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bor_bcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'e3e3e3',
+  `text_color` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `online_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `online_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `offline_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `offline_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `logo_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `logo_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `header_background` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_tcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_bcolor` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_border` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_close_bg` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_hover_bg` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_close_hover_bg` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `custom_status_css` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `custom_container_css` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `custom_widget_css` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_header` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `need_help_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `online_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `offline_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `widget_border_color` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `copyright_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `copyright_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `widget_copyright_url` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `show_copyright` int(11) NOT NULL DEFAULT 1,
-  `explain_text` text NOT NULL,
-  `intro_operator_text` text NOT NULL,
-  `operator_image` varchar(250) NOT NULL,
-  `operator_image_path` varchar(250) NOT NULL,
-  `minimize_image` varchar(250) NOT NULL,
-  `minimize_image_path` varchar(250) NOT NULL,
-  `restore_image` varchar(250) NOT NULL,
-  `restore_image_path` varchar(250) NOT NULL,
-  `close_image` varchar(250) NOT NULL,
-  `close_image_path` varchar(250) NOT NULL,
-  `popup_image` varchar(250) NOT NULL,
-  `popup_image_path` varchar(250) NOT NULL,
+  `explain_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `intro_operator_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `operator_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `operator_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `minimize_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `minimize_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `restore_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `restore_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `close_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `close_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `popup_image` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `popup_image_path` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   `hide_close` int(11) NOT NULL DEFAULT 0,
   `hide_popup` int(11) NOT NULL DEFAULT 0,
   `header_height` int(11) NOT NULL DEFAULT 0,
   `header_padding` int(11) NOT NULL DEFAULT 0,
   `widget_border_width` int(11) NOT NULL DEFAULT 0,
-  `support_joined` text NOT NULL,
-  `support_closed` text NOT NULL,
-  `pending_join` text NOT NULL,
-  `noonline_operators` text NOT NULL,
-  `noonline_operators_offline` text NOT NULL,
+  `support_joined` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `support_closed` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pending_join` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `noonline_operators` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `noonline_operators_offline` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `show_need_help` int(11) NOT NULL DEFAULT 1,
   `show_need_help_timeout` int(11) NOT NULL DEFAULT 24,
   `show_voting` tinyint(1) NOT NULL DEFAULT 1,
-  `department_title` text NOT NULL,
-  `department_select` varchar(250) NOT NULL,
-  `buble_visitor_background` varchar(250) NOT NULL,
-  `buble_visitor_title_color` varchar(250) NOT NULL,
-  `buble_visitor_text_color` varchar(250) NOT NULL,
-  `buble_operator_background` varchar(250) NOT NULL,
-  `buble_operator_title_color` varchar(250) NOT NULL,
-  `buble_operator_text_color` varchar(250) NOT NULL,
-  `custom_popup_css` mediumtext NOT NULL,
+  `department_title` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `department_select` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buble_visitor_background` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buble_visitor_title_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buble_visitor_text_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buble_operator_background` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buble_operator_title_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buble_operator_text_color` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `custom_popup_css` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `hide_ts` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `hide_op_ts` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `widget_response_width` int(11) NOT NULL DEFAULT 0,
   `show_need_help_delay` int(11) NOT NULL DEFAULT 0,
   `show_status_delay` int(11) NOT NULL DEFAULT 0,
   `modern_look` tinyint(1) NOT NULL DEFAULT 0,
-  `bot_status_text` text NOT NULL,
-  `bot_configuration` longtext NOT NULL,
-  `notification_configuration` longtext NOT NULL,
-  `pending_join_queue` text NOT NULL,
+  `bot_status_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bot_configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notification_configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pending_join_queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `modified` int(11) NOT NULL,
   `widget_show_leave_form` tinyint(1) NOT NULL,
   `enable_widget_embed_override` tinyint(1) NOT NULL,
   `widget_popheight` int(11) NOT NULL,
   `widget_popwidth` int(11) NOT NULL,
   `widget_survey` int(11) NOT NULL,
-  `widget_position` varchar(50) NOT NULL,
+  `widget_position` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `widget_pright` int(11) NOT NULL,
   `widget_pbottom` int(11) NOT NULL,
-  `alias` varchar(50) NOT NULL,
-  `hide_op_ts` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `alias` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `alias` (`alias`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1249,37 +1397,36 @@ INSERT INTO `lh_abstract_widget_theme` (`id`, `name`, `name_company`, `onl_bcolo
 DROP TABLE IF EXISTS `lh_admin_theme`;
 CREATE TABLE `lh_admin_theme` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `static_content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `static_js_content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `static_css_content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `css_attributes` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `header_content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `static_content` longtext NOT NULL,
+  `static_js_content` longtext NOT NULL,
+  `static_css_content` longtext NOT NULL,
+  `css_attributes` longtext NOT NULL,
+  `header_content` text NOT NULL,
   `user_id` int(11) NOT NULL,
-  `header_css` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `header_css` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_audits`;
 CREATE TABLE `lh_audits` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `category` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `object_id` bigint(20) DEFAULT 0,
-  `line` bigint(20) DEFAULT NULL,
-  `message` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `severity` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `source` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `user_id` bigint(20) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
+  `id` bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `category` varchar(255) NOT NULL,
+  `file` varchar(255),
+  `user_id` bigint(20) DEFAULT '0',
+  `object_id` bigint(20) DEFAULT '0',
+  `line` bigint(20),
+  `message` longtext NOT NULL,
+  `severity` varchar(255) NOT NULL,
+  `source` varchar(255) NOT NULL,
+  `time` timestamp NOT NULL,
+  KEY `user_id` (`user_id`),
   KEY `object_id` (`object_id`),
-  KEY `source` (`source`(191)),
-  KEY `category` (`category`(191)),
   KEY `time` (`time`),
-  KEY `user_id` (`user_id`)
+  KEY `source` (`source`(191)),
+  KEY `category` (`category`(191))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `lh_bot_condition`;
@@ -1296,7 +1443,7 @@ CREATE TABLE `lh_bot_condition` (
 DROP TABLE IF EXISTS `lh_brand`;
 CREATE TABLE `lh_brand` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1306,7 +1453,7 @@ CREATE TABLE `lh_brand_member` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `dep_id` bigint(20) unsigned NOT NULL,
   `brand_id` bigint(20) unsigned NOT NULL,
-  `role` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`),
   KEY `brand_id_role` (`brand_id`,`role`)
@@ -1316,42 +1463,43 @@ CREATE TABLE `lh_brand_member` (
 DROP TABLE IF EXISTS `lh_canned_msg`;
 CREATE TABLE `lh_canned_msg` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `msg` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fallback_msg` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `explain` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `languages` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `additional_data` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `msg` longtext NOT NULL,
+  `fallback_msg` text NOT NULL,
+  `title` varchar(250) NOT NULL,
+  `explain` varchar(250) NOT NULL,
+  `languages` text NOT NULL,
+  `additional_data` text NOT NULL,
   `position` int(11) NOT NULL,
   `department_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `delay` int(11) NOT NULL,
   `auto_send` tinyint(1) NOT NULL,
-  `html_snippet` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `html_snippet` longtext NOT NULL,
+  `activate_responder` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `attr_int_1` int(11) NOT NULL,
   `attr_int_2` int(11) NOT NULL,
   `attr_int_3` int(11) NOT NULL,
-  `disabled` tinyint(1) unsigned DEFAULT 0,
-  `unique_id` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `disabled` tinyint(1) unsigned NOT NULL NULL DEFAULT 0,
+  `unique_id` varchar(20) NOT NULL,
   `updated_at` int(11) unsigned NOT NULL DEFAULT 0,
   `created_at` int(11) unsigned NOT NULL DEFAULT 0,
   `active_from` int(11) unsigned NOT NULL DEFAULT 0,
   `active_to` int(11) unsigned NOT NULL DEFAULT 0,
   `repetitiveness` int(11) unsigned NOT NULL DEFAULT 0,
   `days_activity` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `delete_on_exp` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `delete_on_exp` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`),
   KEY `disabled` (`disabled`),
   KEY `attr_int_1` (`attr_int_1`),
   KEY `attr_int_2` (`attr_int_2`),
   KEY `attr_int_3` (`attr_int_3`),
-  KEY `position_title_v2` (`position`,`title`(191)),
+  KEY `delete_on_exp` (`delete_on_exp`),
+  KEY `position_title_v2` (`position`, `title`(191)),
   KEY `user_id` (`user_id`),
   KEY `unique_id` (`unique_id`),
-  KEY `repetitiveness` (`repetitiveness`),
-  KEY `delete_on_exp` (`delete_on_exp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `repetitiveness` (`repetitiveness`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_canned_msg_dep`;
@@ -1362,15 +1510,16 @@ CREATE TABLE `lh_canned_msg_dep` (
   PRIMARY KEY (`id`),
   KEY `canned_id` (`canned_id`),
   KEY `dep_id` (`dep_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_canned_msg_replace`;
 CREATE TABLE `lh_canned_msg_replace` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `default` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `conditions` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `default` text NOT NULL,
+  `conditions` longtext NOT NULL,
+  `configuration` text NOT NULL,
   `active_from` int(11) unsigned NOT NULL DEFAULT 0,
   `active_to` int(11) unsigned NOT NULL DEFAULT 0,
   `repetitiveness` int(11) unsigned NOT NULL DEFAULT 0,
@@ -1394,10 +1543,10 @@ CREATE TABLE `lh_canned_msg_subject` (
 DROP TABLE IF EXISTS `lh_canned_msg_tag`;
 CREATE TABLE `lh_canned_msg_tag` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tag` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag` varchar(40) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `tag` (`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_canned_msg_tag_link`;
@@ -1408,7 +1557,7 @@ CREATE TABLE `lh_canned_msg_tag_link` (
   PRIMARY KEY (`id`),
   KEY `canned_id` (`canned_id`),
   KEY `tag_id` (`tag_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_canned_msg_use`;
@@ -1428,45 +1577,45 @@ CREATE TABLE `lh_canned_msg_use` (
 DROP TABLE IF EXISTS `lh_chat`;
 CREATE TABLE `lh_chat` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `nick` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 0,
-  `status_sub` int(11) NOT NULL DEFAULT 0,
-  `status_sub_sub` int(11) NOT NULL DEFAULT 0,
+  `nick` varchar(100) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '0',
+  `status_sub` int(11) NOT NULL DEFAULT '0',
+  `status_sub_sub` int(11) NOT NULL DEFAULT '0',
   `time` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `hash` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `referrer` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `session_referrer` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chat_variables` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remarks` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ip` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hash` varchar(40) NOT NULL,
+  `referrer` text NOT NULL,
+  `session_referrer` text NOT NULL,
+  `chat_variables` text NOT NULL,
+  `remarks` text NOT NULL,
+  `ip` varchar(100) NOT NULL,
   `dep_id` int(11) NOT NULL,
   `invitation_id` int(11) NOT NULL,
   `sender_user_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `pnd_time` int(11) NOT NULL DEFAULT 0,
-  `cls_time` int(11) NOT NULL DEFAULT 0,
-  `usaccept` int(11) NOT NULL DEFAULT 0,
-  `user_status` int(11) NOT NULL DEFAULT 0,
-  `user_closed_ts` int(11) NOT NULL DEFAULT 0,
-  `support_informed` int(11) NOT NULL DEFAULT 0,
-  `unread_messages_informed` int(11) NOT NULL DEFAULT 0,
-  `reinform_timeout` int(11) NOT NULL DEFAULT 0,
-  `last_op_msg_time` int(11) NOT NULL DEFAULT 0,
-  `has_unread_op_messages` int(11) NOT NULL DEFAULT 0,
-  `unread_op_messages_informed` int(11) NOT NULL DEFAULT 0,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `country_code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `country_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pnd_time` int(11) NOT NULL DEFAULT '0',
+  `cls_time` int(11) NOT NULL DEFAULT '0',
+  `usaccept` int(11) NOT NULL DEFAULT '0',
+  `user_status` int(11) NOT NULL DEFAULT '0',
+  `user_closed_ts` int(11) NOT NULL DEFAULT '0',
+  `support_informed` int(11) NOT NULL DEFAULT '0',
+  `unread_messages_informed` int(11) NOT NULL DEFAULT '0',
+  `reinform_timeout` int(11) NOT NULL DEFAULT '0',
+  `last_op_msg_time` int(11) NOT NULL DEFAULT '0',
+  `has_unread_op_messages` int(11) NOT NULL DEFAULT '0',
+  `unread_op_messages_informed` int(11) NOT NULL DEFAULT '0',
+  `email` varchar(100) NOT NULL,
+  `country_code` varchar(100) NOT NULL,
+  `country_name` varchar(100) NOT NULL,
   `unanswered_chat` int(11) NOT NULL,
-  `cls_us` tinyint(1) NOT NULL DEFAULT 0,
+  `cls_us` tinyint(1) NOT NULL DEFAULT '0',
   `anonymized` tinyint(1) NOT NULL,
   `user_typing` int(11) NOT NULL,
-  `gbot_id` int(11) NOT NULL DEFAULT 0,
-  `user_typing_txt` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `gbot_id` int(11) NOT NULL DEFAULT '0',
+  `user_typing_txt` varchar(200) NOT NULL,
   `operator_typing` int(11) NOT NULL,
   `operator_typing_id` int(11) NOT NULL,
-  `phone` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(100) NOT NULL,
   `has_unread_messages` int(11) NOT NULL,
   `last_user_msg_time` int(11) NOT NULL,
   `fbst` tinyint(1) NOT NULL,
@@ -1475,17 +1624,17 @@ CREATE TABLE `lh_chat` (
   `last_msg_id` int(11) NOT NULL,
   `lsync` int(11) NOT NULL,
   `transfer_uid` int(11) NOT NULL,
-  `additional_data` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_tz_identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lat` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lon` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `city` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operation` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operation_admin` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status_sub_arg` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `uagent` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chat_locale` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chat_locale_to` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `additional_data` text NOT NULL,
+  `user_tz_identifier` varchar(50) NOT NULL,
+  `lat` varchar(10) NOT NULL,
+  `lon` varchar(10) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `operation` text NOT NULL,
+  `operation_admin` varchar(200) NOT NULL,
+  `status_sub_arg` varchar(200) NOT NULL,
+  `uagent` varchar(250) NOT NULL,
+  `chat_locale` varchar(10) NOT NULL,
+  `chat_locale_to` varchar(10) NOT NULL,
   `mail_send` int(11) NOT NULL,
   `screenshot_id` int(11) NOT NULL,
   `wait_time` int(11) NOT NULL,
@@ -1499,16 +1648,17 @@ CREATE TABLE `lh_chat` (
   `na_cb_executed` int(11) NOT NULL,
   `device_type` int(11) NOT NULL,
   `nc_cb_executed` tinyint(1) NOT NULL,
-  `iwh_id` int(11) NOT NULL DEFAULT 0,
-  `theme_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `frt` int(11) unsigned NOT NULL DEFAULT 0,
-  `aart` int(11) unsigned NOT NULL DEFAULT 0,
-  `mart` int(11) unsigned NOT NULL DEFAULT 0,
+  `iwh_id` int(11) NOT NULL DEFAULT '0',
+  `theme_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `frt` int(11) unsigned NOT NULL DEFAULT '0',
+  `aart` int(11) unsigned NOT NULL DEFAULT '0',
+  `mart` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `status_user_id` (`status`,`user_id`),
   KEY `unanswered_chat` (`unanswered_chat`),
   KEY `online_user_id` (`online_user_id`),
   KEY `dep_id` (`dep_id`),
+  KEY `time` (`time`),
   KEY `product_id` (`product_id`),
   KEY `unread_operator` (`has_unread_op_messages`,`unread_op_messages_informed`),
   KEY `user_id_sender_user_id` (`user_id`,`sender_user_id`),
@@ -1516,14 +1666,13 @@ CREATE TABLE `lh_chat` (
   KEY `anonymized` (`anonymized`),
   KEY `has_unread_messages` (`has_unread_messages`),
   KEY `status` (`status`),
-  KEY `dep_id_status` (`dep_id`,`status`),
   KEY `nick` (`nick`),
-  KEY `time` (`time`),
   KEY `iwh_id` (`iwh_id`),
   KEY `theme_id` (`theme_id`),
   KEY `email` (`email`),
-  KEY `phone` (`phone`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `phone` (`phone`),
+  KEY `dep_id_status` (`dep_id`,`status`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_chat` (`id`, `nick`, `status`, `status_sub`, `status_sub_sub`, `time`, `user_id`, `hash`, `referrer`, `session_referrer`, `chat_variables`, `remarks`, `ip`, `dep_id`, `invitation_id`, `sender_user_id`, `product_id`, `pnd_time`, `cls_time`, `usaccept`, `user_status`, `user_closed_ts`, `support_informed`, `unread_messages_informed`, `reinform_timeout`, `last_op_msg_time`, `has_unread_op_messages`, `unread_op_messages_informed`, `email`, `country_code`, `country_name`, `unanswered_chat`, `cls_us`, `anonymized`, `user_typing`, `gbot_id`, `user_typing_txt`, `operator_typing`, `operator_typing_id`, `phone`, `has_unread_messages`, `last_user_msg_time`, `fbst`, `online_user_id`, `auto_responder_id`, `last_msg_id`, `lsync`, `transfer_uid`, `additional_data`, `user_tz_identifier`, `lat`, `lon`, `city`, `operation`, `operation_admin`, `status_sub_arg`, `uagent`, `chat_locale`, `chat_locale_to`, `mail_send`, `screenshot_id`, `wait_time`, `chat_duration`, `tslasign`, `priority`, `chat_initiator`, `transfer_timeout_ts`, `transfer_timeout_ac`, `transfer_if_na`, `na_cb_executed`, `device_type`, `nc_cb_executed`, `iwh_id`, `theme_id`, `frt`, `aart`, `mart`) VALUES
 (3,	'Visitor',	1,	1,	0,	1761559888,	1,	'oCZAp47ROpAGfkI7lChgb78byFWiE0DytQf3KrCn',	'//example.com/chat/start',	'',	'',	'',	'192.168.1.1',	1,	0,	0,	0,	1761559888,	0,	0,	2,	1761559955,	1,	0,	0,	1761562915,	1,	0,	'',	'',	'',	1,	0,	0,	1761559950,	0,	'Visitor has left the chat!',	0,	0,	'',	0,	0,	0,	32,	0,	13,	1761559952,	0,	'',	'Europe/Vilnius',	'0',	'0',	'',	'',	'',	'',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36',	'en-US',	'',	0,	0,	3015,	0,	0,	0,	0,	0,	0,	0,	0,	0,	1,	0,	0,	0,	0,	0),
@@ -1533,25 +1682,25 @@ INSERT INTO `lh_chat` (`id`, `nick`, `status`, `status_sub`, `status_sub_sub`, `
 DROP TABLE IF EXISTS `lh_chatbox`;
 CREATE TABLE `lh_chatbox` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
   `chat_id` int(11) NOT NULL,
   `active` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `identifier` (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_accept`;
 CREATE TABLE `lh_chat_accept` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `chat_id` bigint(20) NOT NULL,
-  `hash` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hash` varchar(50) NOT NULL,
   `ctime` int(11) NOT NULL,
   `wused` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `hash` (`hash`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_action`;
@@ -1571,10 +1720,10 @@ CREATE TABLE `lh_chat_archive_range` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `range_from` bigint(20) unsigned NOT NULL,
   `range_to` bigint(20) unsigned NOT NULL,
-  `year_month` int(11) NOT NULL,
   `older_than` int(11) NOT NULL,
   `last_id` bigint(20) NOT NULL,
   `first_id` bigint(20) NOT NULL,
+  `year_month` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1587,9 +1736,9 @@ CREATE TABLE `lh_chat_blocked_user` (
   `datets` bigint(20) unsigned NOT NULL,
   `chat_id` bigint(20) unsigned NOT NULL,
   `dep_id` bigint(20) unsigned NOT NULL,
-  `expires` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `btype` tinyint(1) NOT NULL DEFAULT 0,
   `nick` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `btype` tinyint(1) NOT NULL DEFAULT 0,
+  `expires` bigint(20) unsigned NOT NULL DEFAULT 0,
   `online_user_id` bigint(20) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `ip` (`ip`),
@@ -1600,13 +1749,13 @@ CREATE TABLE `lh_chat_blocked_user` (
 
 DROP TABLE IF EXISTS `lh_chat_config`;
 CREATE TABLE `lh_chat_config` (
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` tinyint(1) NOT NULL DEFAULT 0,
-  `explain` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hidden` int(11) NOT NULL DEFAULT 0,
+  `identifier` varchar(50) NOT NULL,
+  `value` text NOT NULL,
+  `type` tinyint(1) NOT NULL DEFAULT '0',
+  `explain` varchar(250) NOT NULL,
+  `hidden` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_chat_config` (`identifier`, `value`, `type`, `explain`, `hidden`) VALUES
 ('accept_chat_link_timeout',	'300',	0,	'How many seconds chat accept link is valid. Set 0 to force login all the time manually.',	0),
@@ -1746,8 +1895,8 @@ INSERT INTO `lh_chat_config` (`identifier`, `value`, `type`, `explain`, `hidden`
 DROP TABLE IF EXISTS `lh_chat_event_track`;
 CREATE TABLE `lh_chat_event_track` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `data` longtext NOT NULL,
   `department_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`)
@@ -1757,26 +1906,28 @@ CREATE TABLE `lh_chat_event_track` (
 DROP TABLE IF EXISTS `lh_chat_file`;
 CREATE TABLE `lh_chat_file` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `upload_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `upload_name` varchar(255) NOT NULL,
   `size` int(11) NOT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `extension` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `extension` varchar(255) NOT NULL,
   `chat_id` bigint(20) NOT NULL,
   `persistent` int(11) NOT NULL,
   `online_user_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `date` int(11) NOT NULL,
-  `meta_msg` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `width` int(11) unsigned NOT NULL DEFAULT 0,
-  `height` int(11) unsigned NOT NULL DEFAULT 0,
-  `tmp` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `meta_msg` longtext NOT NULL,
+  `width` int(11) unsigned NOT NULL DEFAULT '0',
+  `height` int(11) unsigned NOT NULL DEFAULT '0',
+  `tmp` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `caption` text NOT NULL,
+  `caption_ocr` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`),
   KEY `online_user_id` (`online_user_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_incoming`;
@@ -1785,22 +1936,22 @@ CREATE TABLE `lh_chat_incoming` (
   `chat_id` bigint(20) NOT NULL,
   `utime` bigint(20) NOT NULL,
   `incoming_id` int(11) NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `chat_external_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext NOT NULL,
+  `chat_external_id` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `incoming_ext_id_uniq` (`incoming_id`,`chat_external_id`),
-  KEY `chat_id` (`chat_id`)
+  KEY `chat_id` (`chat_id`),
+  UNIQUE KEY `incoming_ext_id_uniq` (`incoming_id`,`chat_external_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_online_user`;
 CREATE TABLE `lh_chat_online_user` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `vid` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ip` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `current_page` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `page_title` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `referrer` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `vid` varchar(50) NOT NULL,
+  `ip` varchar(50) NOT NULL,
+  `current_page` text NOT NULL,
+  `page_title` varchar(250) NOT NULL,
+  `referrer` text NOT NULL,
   `chat_id` bigint(20) NOT NULL,
   `invitation_seen_count` int(11) NOT NULL,
   `invitation_id` int(11) NOT NULL,
@@ -1812,21 +1963,21 @@ CREATE TABLE `lh_chat_online_user` (
   `invitation_count` int(11) NOT NULL,
   `last_check_time` int(11) NOT NULL,
   `dep_id` int(11) NOT NULL,
-  `user_agent` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `notes` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_country_code` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_country_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `visitor_tz` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_message` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operator_user_proactive` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_agent` text NOT NULL,
+  `notes` varchar(250) NOT NULL,
+  `user_country_code` varchar(50) NOT NULL,
+  `user_country_name` varchar(50) NOT NULL,
+  `visitor_tz` varchar(50) NOT NULL,
+  `operator_message` text NOT NULL,
+  `operator_user_proactive` varchar(100) NOT NULL,
   `operator_user_id` int(11) NOT NULL,
   `conversion_id` int(11) NOT NULL,
   `message_seen` int(11) NOT NULL,
   `message_seen_ts` int(11) NOT NULL,
   `user_active` int(11) NOT NULL,
-  `lat` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lon` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `city` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lat` varchar(10) NOT NULL,
+  `lon` varchar(10) NOT NULL,
+  `city` varchar(100) NOT NULL,
   `reopen_chat` int(11) NOT NULL,
   `time_on_site` int(11) NOT NULL,
   `tt_time_on_site` int(11) NOT NULL,
@@ -1834,20 +1985,20 @@ CREATE TABLE `lh_chat_online_user` (
   `requires_username` int(11) NOT NULL,
   `requires_phone` int(11) NOT NULL,
   `screenshot_id` int(11) NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operation` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `online_attr_system` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `operation_chat` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `online_attr` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `device_type` tinyint(1) NOT NULL DEFAULT 0,
+  `identifier` varchar(50) NOT NULL,
+  `operation` text NOT NULL,
+  `online_attr_system` text NOT NULL,
+  `operation_chat` text NOT NULL,
+  `online_attr` text NOT NULL,
+  `device_type` tinyint(1) NOT NULL DEFAULT '0',
   `chat_time` bigint(20) unsigned NOT NULL DEFAULT 0,
   `last_visit_prev` bigint(20) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `vid` (`vid`),
   KEY `dep_id` (`dep_id`),
-  KEY `last_visit_dep_id` (`last_visit`,`dep_id`),
-  KEY `first_visit` (`first_visit`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `first_visit` (`first_visit`),
+  KEY `last_visit_dep_id` (`last_visit`,`dep_id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_chat_online_user` (`id`, `vid`, `ip`, `current_page`, `page_title`, `referrer`, `chat_id`, `invitation_seen_count`, `invitation_id`, `last_visit`, `first_visit`, `total_visits`, `pages_count`, `tt_pages_count`, `invitation_count`, `last_check_time`, `dep_id`, `user_agent`, `notes`, `user_country_code`, `user_country_name`, `visitor_tz`, `operator_message`, `operator_user_proactive`, `operator_user_id`, `conversion_id`, `message_seen`, `message_seen_ts`, `user_active`, `lat`, `lon`, `city`, `reopen_chat`, `time_on_site`, `tt_time_on_site`, `requires_email`, `requires_username`, `requires_phone`, `screenshot_id`, `identifier`, `operation`, `online_attr_system`, `operation_chat`, `online_attr`, `device_type`, `chat_time`, `last_visit_prev`) VALUES
 (32,	'3b5bcd7c07be4c6dd659',	'192.168.1.1',	'',	'',	'',	3,	0,	0,	1762411928,	1761552891,	8,	1,	26,	0,	1762411928,	1,	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',	'',	'',	'',	'Europe/Vilnius',	'',	'',	0,	0,	0,	0,	1,	'0',	'0',	'',	1,	0,	3480,	0,	0,	0,	0,	'',	'',	'',	'',	'',	1,	1761559888,	1762341232),
@@ -1859,19 +2010,19 @@ CREATE TABLE `lh_chat_online_user_footprint` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `chat_id` bigint(20) NOT NULL,
   `online_user_id` int(11) NOT NULL,
-  `page` varchar(2083) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `page` varchar(2083) NOT NULL,
   `vtime` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`),
   KEY `online_user_id` (`online_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_online_user_footprint_update`;
 CREATE TABLE `lh_chat_online_user_footprint_update` (
   `online_user_id` bigint(20) NOT NULL,
-  `command` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `args` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `command` varchar(20) NOT NULL,
+  `args` varchar(250) NOT NULL,
   `ctime` int(11) NOT NULL,
   KEY `online_user_id` (`online_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1880,12 +2031,12 @@ CREATE TABLE `lh_chat_online_user_footprint_update` (
 DROP TABLE IF EXISTS `lh_chat_paid`;
 CREATE TABLE `lh_chat_paid` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hash` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hash` varchar(250) NOT NULL,
   `chat_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `hash` (`hash`(191)),
   KEY `chat_id` (`chat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_participant`;
@@ -1896,9 +2047,9 @@ CREATE TABLE `lh_chat_participant` (
   `duration` int(11) unsigned NOT NULL,
   `time` bigint(20) unsigned NOT NULL,
   `dep_id` bigint(20) unsigned NOT NULL,
-  `frt` int(11) unsigned NOT NULL DEFAULT 0,
-  `aart` int(11) unsigned NOT NULL DEFAULT 0,
-  `mart` int(11) unsigned NOT NULL DEFAULT 0,
+  `frt` int(11) unsigned NOT NULL DEFAULT '0',
+  `aart` int(11) unsigned NOT NULL DEFAULT '0',
+  `mart` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`),
   KEY `time` (`time`),
@@ -1909,13 +2060,13 @@ CREATE TABLE `lh_chat_participant` (
 DROP TABLE IF EXISTS `lh_chat_start_settings`;
 CREATE TABLE `lh_chat_start_settings` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `data` longtext NOT NULL,
+  `dep_ids` text NOT NULL,
   `department_id` int(11) NOT NULL,
-  `dep_ids` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `department_id` (`department_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_chat_voice_video`;
@@ -1930,10 +2081,10 @@ CREATE TABLE `lh_chat_voice_video` (
   `screen_share` tinyint(4) NOT NULL,
   `status` tinyint(4) NOT NULL,
   `ctime` int(11) NOT NULL,
-  `token` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_cobrowse`;
@@ -1942,18 +2093,18 @@ CREATE TABLE `lh_cobrowse` (
   `chat_id` int(11) NOT NULL,
   `online_user_id` int(11) NOT NULL,
   `mtime` int(11) NOT NULL,
-  `url` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `initialize` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `modifications` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` varchar(250) NOT NULL,
+  `initialize` longtext NOT NULL,
+  `modifications` longtext NOT NULL,
   `finished` tinyint(1) NOT NULL,
-  `w` int(11) NOT NULL,
-  `wh` int(11) NOT NULL,
-  `x` int(11) NOT NULL,
-  `y` int(11) NOT NULL,
+  `w` int NOT NULL,
+  `wh` int NOT NULL,
+  `x` int NOT NULL,
+  `y` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`),
   KEY `online_user_id` (`online_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament`;
@@ -1971,29 +2122,34 @@ CREATE TABLE `lh_departament` (
   `delay_before_assign` int(11) NOT NULL,
   `max_ac_dep_chats` int(11) NOT NULL,
   `assign_same_language` int(11) NOT NULL,
-  `archive` tinyint(1) NOT NULL DEFAULT 0,
-  `max_load` int(11) NOT NULL DEFAULT 0,
-  `max_load_h` int(11) NOT NULL DEFAULT 0,
+  `archive` tinyint(1) NOT NULL DEFAULT '0',
+  `max_load` int(11) NOT NULL DEFAULT '0',
+  `max_load_h` int(11) NOT NULL DEFAULT '0',
+  `max_active_mails` int(11) NOT NULL DEFAULT '0',
+  `active_mail_balancing` tinyint(1) NOT NULL,
+  `max_ac_dep_mails` int(11) NOT NULL,
+  `max_timeout_seconds_mail` int(11) NOT NULL,
+  `delay_before_assign_mail` int(11) NOT NULL,
   `disabled` int(11) NOT NULL,
   `hidden` int(11) NOT NULL,
   `delay_lm` int(11) NOT NULL,
   `max_active_chats` int(11) NOT NULL,
   `max_timeout_seconds` int(11) NOT NULL,
   `identifier` varchar(2083) NOT NULL,
-  `mod_start_hour` int(4) NOT NULL DEFAULT -1,
-  `mod_end_hour` int(4) NOT NULL DEFAULT -1,
-  `tud_start_hour` int(4) NOT NULL DEFAULT -1,
-  `tud_end_hour` int(4) NOT NULL DEFAULT -1,
-  `wed_start_hour` int(4) NOT NULL DEFAULT -1,
-  `wed_end_hour` int(4) NOT NULL DEFAULT -1,
-  `thd_start_hour` int(4) NOT NULL DEFAULT -1,
-  `thd_end_hour` int(4) NOT NULL DEFAULT -1,
-  `frd_start_hour` int(4) NOT NULL DEFAULT -1,
-  `frd_end_hour` int(4) NOT NULL DEFAULT -1,
-  `sad_start_hour` int(4) NOT NULL DEFAULT -1,
-  `sad_end_hour` int(4) NOT NULL DEFAULT -1,
-  `sud_start_hour` int(4) NOT NULL DEFAULT -1,
-  `sud_end_hour` int(4) NOT NULL DEFAULT -1,
+  `mod_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `mod_end_hour` int(4) NOT NULL DEFAULT '-1',
+  `tud_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `tud_end_hour` int(4) NOT NULL DEFAULT '-1',
+  `wed_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `wed_end_hour` int(4) NOT NULL DEFAULT '-1',
+  `thd_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `thd_end_hour` int(4) NOT NULL DEFAULT '-1',
+  `frd_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `frd_end_hour` int(4) NOT NULL DEFAULT '-1',
+  `sad_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `sad_end_hour` int(4) NOT NULL DEFAULT '-1',
+  `sud_start_hour` int(4) NOT NULL DEFAULT '-1',
+  `sud_end_hour` int(4) NOT NULL DEFAULT '-1',
   `nc_cb_execute` tinyint(1) NOT NULL,
   `na_cb_execute` tinyint(1) NOT NULL,
   `inform_unread` tinyint(1) NOT NULL,
@@ -2004,31 +2160,26 @@ CREATE TABLE `lh_departament` (
   `inform_options` varchar(250) NOT NULL,
   `online_hours_active` tinyint(1) NOT NULL,
   `inform_delay` int(11) NOT NULL,
-  `attr_int_1` int(11) NOT NULL DEFAULT 0,
-  `attr_int_2` int(11) NOT NULL DEFAULT 0,
-  `attr_int_3` int(11) NOT NULL DEFAULT 0,
+  `attr_int_1` int(11) NOT NULL DEFAULT '0',
+  `attr_int_2` int(11) NOT NULL DEFAULT '0',
+  `attr_int_3` int(11) NOT NULL DEFAULT '0',
+  `max_load_op` int(11) unsigned NOT NULL DEFAULT '0',
+  `max_load_op_h` int(11) unsigned NOT NULL DEFAULT '0',
   `pending_max` int(11) NOT NULL,
   `pending_group_max` int(11) NOT NULL,
-  `active_chats_counter` int(11) NOT NULL DEFAULT 0,
-  `inactive_chats_cnt` int(11) NOT NULL DEFAULT 0,
-  `pending_chats_counter` int(11) NOT NULL DEFAULT 0,
-  `bot_chats_counter` int(11) NOT NULL DEFAULT 0,
-  `inop_chats_cnt` int(11) NOT NULL DEFAULT 0,
-  `acop_chats_cnt` int(11) NOT NULL DEFAULT 0,
-  `inform_close_all` int(11) NOT NULL DEFAULT 0,
+  `active_chats_counter` int(11) NOT NULL DEFAULT '0',
+  `inactive_chats_cnt` int(11) NOT NULL DEFAULT '0',
+  `pending_chats_counter` int(11) NOT NULL DEFAULT '0',
+  `bot_chats_counter` int(11) NOT NULL DEFAULT '0',
+  `inop_chats_cnt` int(11) NOT NULL DEFAULT '0',
+  `acop_chats_cnt` int(11) NOT NULL DEFAULT '0',
+  `inform_close_all` int(11) NOT NULL DEFAULT '0',
   `inform_close_all_email` varchar(250) NOT NULL DEFAULT '0',
   `alias` varchar(50) NOT NULL,
   `product_configuration` longtext NOT NULL,
   `bot_configuration` text NOT NULL,
-  `dep_offline` tinyint(1) NOT NULL DEFAULT 0,
-  `max_load_op` int(11) unsigned NOT NULL DEFAULT 0,
-  `max_load_op_h` int(11) unsigned NOT NULL DEFAULT 0,
-  `max_ac_dep_mails` int(11) NOT NULL,
-  `delay_before_assign_mail` int(11) NOT NULL,
   `ignore_op_status` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `max_active_mails` int(11) NOT NULL DEFAULT 0,
-  `max_timeout_seconds_mail` int(11) NOT NULL,
-  `active_mail_balancing` tinyint(1) NOT NULL,
+  `dep_offline` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `identifier_2` (`identifier`(191)),
   KEY `archive` (`archive`),
@@ -2039,8 +2190,9 @@ CREATE TABLE `lh_departament` (
   KEY `active_chats_counter` (`active_chats_counter`),
   KEY `pending_chats_counter` (`pending_chats_counter`),
   KEY `bot_chats_counter` (`bot_chats_counter`),
-  KEY `disabled_hidden` (`disabled`,`hidden`),
-  KEY `sort_priority_name` (`sort_priority`,`name`),
+  KEY `disabled_hidden` (`disabled`, `hidden`),
+  KEY `dep_offline` (`dep_offline`),
+  KEY `sort_priority_name` (`sort_priority`, `name`),
   KEY `active_mod` (`online_hours_active`,`mod_start_hour`,`mod_end_hour`),
   KEY `active_tud` (`online_hours_active`,`tud_start_hour`,`tud_end_hour`),
   KEY `active_wed` (`online_hours_active`,`wed_start_hour`,`wed_end_hour`),
@@ -2048,9 +2200,8 @@ CREATE TABLE `lh_departament` (
   KEY `active_frd` (`online_hours_active`,`frd_start_hour`,`frd_end_hour`),
   KEY `active_sad` (`online_hours_active`,`sad_start_hour`,`sad_end_hour`),
   KEY `active_sud` (`online_hours_active`,`sud_start_hour`,`sud_end_hour`),
-  KEY `ignore_op_status` (`ignore_op_status`),
-  KEY `dep_offline` (`dep_offline`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `ignore_op_status` (`ignore_op_status`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_departament` (`id`, `name`, `email`, `xmpp_recipients`, `xmpp_group_recipients`, `priority`, `sort_priority`, `department_transfer_id`, `transfer_timeout`, `exclude_inactive_chats`, `delay_before_assign`, `max_ac_dep_chats`, `assign_same_language`, `archive`, `max_load`, `max_load_h`, `disabled`, `hidden`, `delay_lm`, `max_active_chats`, `max_timeout_seconds`, `identifier`, `mod_start_hour`, `mod_end_hour`, `tud_start_hour`, `tud_end_hour`, `wed_start_hour`, `wed_end_hour`, `thd_start_hour`, `thd_end_hour`, `frd_start_hour`, `frd_end_hour`, `sad_start_hour`, `sad_end_hour`, `sud_start_hour`, `sud_end_hour`, `nc_cb_execute`, `na_cb_execute`, `inform_unread`, `active_balancing`, `visible_if_online`, `inform_close`, `inform_unread_delay`, `inform_options`, `online_hours_active`, `inform_delay`, `attr_int_1`, `attr_int_2`, `attr_int_3`, `pending_max`, `pending_group_max`, `active_chats_counter`, `inactive_chats_cnt`, `pending_chats_counter`, `bot_chats_counter`, `inop_chats_cnt`, `acop_chats_cnt`, `inform_close_all`, `inform_close_all_email`, `alias`, `product_configuration`, `bot_configuration`, `dep_offline`, `max_load_op`, `max_load_op_h`, `max_ac_dep_mails`, `delay_before_assign_mail`, `ignore_op_status`, `max_active_mails`, `max_timeout_seconds_mail`, `active_mail_balancing`) VALUES
 (1,	'default',	'',	'',	'',	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	'',	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	-1,	0,	0,	0,	0,	0,	0,	0,	'a:0:{}',	0,	0,	0,	0,	0,	0,	0,	3,	0,	0,	0,	0,	0,	0,	'',	'',	'{\"products_enabled\":0,\"products_required\":0}',	'{\"auto_lower_limit\":0,\"assign_by_priority\":0,\"active_prioritized_assignment\":0,\"assign_by_priority_chat\":0,\"only_priority\":0,\"min_agent_priority\":0,\"priority_check\":0,\"min_chat_priority\":0,\"max_chat_priority\":0,\"off_op_exec\":0,\"no_transfer_no_operators\":0,\"off_op_work_hours\":0,\"ru_on_transfer\":0,\"off_if_online\":0,\"bot_id\":0,\"mailbox_id\":0,\"transfer_min_priority\":\"\",\"theme_ind\":0,\"survey_id\":0,\"bot_only_offline\":false,\"hide_survey_bot\":false,\"bot_foh\":false,\"auto_delay_timeout\":0,\"auto_delay_var\":\"\",\"hide_send_email\":false}',	0,	0,	0,	0,	0,	0,	0,	0,	0);
@@ -2071,7 +2222,7 @@ CREATE TABLE `lh_departament_availability` (
   KEY `dep_id` (`dep_id`),
   KEY `hourminute` (`hourminute`),
   KEY `time` (`time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament_custom_work_hours`;
@@ -2082,13 +2233,13 @@ CREATE TABLE `lh_departament_custom_work_hours` (
   `date_to` int(11) NOT NULL,
   `start_hour` int(11) NOT NULL,
   `end_hour` int(11) NOT NULL,
-  `repetitiveness` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `repetitiveness` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`),
+  KEY `repetitiveness` (`repetitiveness`),
   KEY `date_from` (`date_from`),
-  KEY `search_active` (`date_from`,`date_to`,`dep_id`),
-  KEY `repetitiveness` (`repetitiveness`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `search_active` (`date_from`, `date_to`, `dep_id`)
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament_group`;
@@ -2106,7 +2257,7 @@ CREATE TABLE `lh_departament_group` (
   `max_load_op` int(11) unsigned NOT NULL DEFAULT 0,
   `max_load_op_h` int(11) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament_group_member`;
@@ -2116,7 +2267,7 @@ CREATE TABLE `lh_departament_group_member` (
   `dep_group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `dep_group_id_dep_id` (`dep_group_id`,`dep_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament_group_user`;
@@ -2124,16 +2275,18 @@ CREATE TABLE `lh_departament_group_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `dep_group_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `read_only` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `exc_indv_autoasign` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `assign_priority` int(11) NOT NULL DEFAULT 0,
-  `chat_min_priority` int(11) NOT NULL DEFAULT 0,
-  `chat_max_priority` int(11) NOT NULL DEFAULT 0,
-  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `read_only` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `exc_indv_autoasign` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `assign_priority` int(11) NOT NULL DEFAULT '0',
+  `chat_min_priority` int(11) NOT NULL DEFAULT '0',
+  `chat_max_priority` int(11) NOT NULL DEFAULT '0',
+  `chat_min_priority_std` int(11) NOT NULL DEFAULT '0',
+  `chat_max_priority_std` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `dep_group_id` (`dep_group_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament_group_user_disabled`;
@@ -2146,7 +2299,9 @@ CREATE TABLE `lh_departament_group_user_disabled` (
   `assign_priority` int(11) NOT NULL DEFAULT 0,
   `chat_min_priority` int(11) NOT NULL DEFAULT 0,
   `chat_max_priority` int(11) NOT NULL DEFAULT 0,
-  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `chat_min_priority_std` int(11) NOT NULL DEFAULT 0,
+  `chat_max_priority_std` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `dep_group_id` (`dep_group_id`),
   KEY `user_id` (`user_id`)
@@ -2156,10 +2311,10 @@ CREATE TABLE `lh_departament_group_user_disabled` (
 DROP TABLE IF EXISTS `lh_departament_limit_group`;
 CREATE TABLE `lh_departament_limit_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
   `pending_max` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_departament_limit_group_member`;
@@ -2169,17 +2324,17 @@ CREATE TABLE `lh_departament_limit_group_member` (
   `dep_limit_group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `dep_limit_group_id` (`dep_limit_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_faq`;
 CREATE TABLE `lh_faq` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `question` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `answer` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `url` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `identifier` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question` varchar(250) NOT NULL,
+  `answer` text NOT NULL,
+  `url` varchar(250) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `identifier` varchar(10) NOT NULL,
   `active` int(11) NOT NULL,
   `has_url` tinyint(1) NOT NULL,
   `is_wildcard` tinyint(1) NOT NULL,
@@ -2189,17 +2344,16 @@ CREATE TABLE `lh_faq` (
   KEY `has_url` (`has_url`),
   KEY `identifier` (`identifier`),
   KEY `is_wildcard` (`is_wildcard`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_forgotpasswordhash`;
 CREATE TABLE `lh_forgotpasswordhash` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `hash` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `hash` VARCHAR( 40 ) NOT NULL,
+  `created` INT NOT NULL
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_bot`;
@@ -2211,10 +2365,13 @@ CREATE TABLE `lh_generic_bot_bot` (
   `filepath` varchar(250) NOT NULL,
   `name` varchar(100) NOT NULL,
   `nick` varchar(100) NOT NULL,
+  `short_name` varchar(50) NOT NULL DEFAULT '',
   `attr_str_1` varchar(100) NOT NULL,
   `attr_str_2` varchar(100) NOT NULL,
   `attr_str_3` varchar(100) NOT NULL,
-  `short_name` varchar(50) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2228,7 +2385,7 @@ CREATE TABLE `lh_generic_bot_chat_event` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `chat_id` bigint(20) NOT NULL,
   `counter` int(11) NOT NULL,
-  `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext NOT NULL,
   `ctime` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`)
@@ -2241,9 +2398,9 @@ CREATE TABLE `lh_generic_bot_chat_workflow` (
   `chat_id` bigint(20) NOT NULL,
   `trigger_id` bigint(20) NOT NULL,
   `time` int(11) NOT NULL,
-  `identifier` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(100) NOT NULL,
   `status` int(11) NOT NULL,
-  `collected_data` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `collected_data` text,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2252,18 +2409,18 @@ CREATE TABLE `lh_generic_bot_chat_workflow` (
 DROP TABLE IF EXISTS `lh_generic_bot_command`;
 CREATE TABLE `lh_generic_bot_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `command` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `command` varchar(50) NOT NULL,
+  `sub_command` varchar(100) NOT NULL,
+  `enabled_display` tinyint(1) NOT NULL DEFAULT '0',
+  `info_msg` varchar(100) NOT NULL,
+  `name` varchar(50) NOT NULL,
   `bot_id` int(11) NOT NULL,
   `trigger_id` int(11) NOT NULL,
   `dep_id` int(11) NOT NULL,
-  `enabled_display` tinyint(1) NOT NULL DEFAULT 0,
-  `position` int(11) unsigned NOT NULL DEFAULT 1000,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fields` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `shortcut_1` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `shortcut_2` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sub_command` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `info_msg` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fields` text NOT NULL,
+  `shortcut_1` varchar(10) NOT NULL,
+  `shortcut_2` varchar(10) NOT NULL,
+  `position` int(11) unsigned NOT NULL DEFAULT '1000',
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`),
   KEY `command` (`command`)
@@ -2273,21 +2430,21 @@ CREATE TABLE `lh_generic_bot_command` (
 DROP TABLE IF EXISTS `lh_generic_bot_exception`;
 CREATE TABLE `lh_generic_bot_exception` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
   `priority` int(11) NOT NULL,
   `active` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_exception_message`;
 CREATE TABLE `lh_generic_bot_exception_message` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `code` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(20) NOT NULL,
   `exception_group_id` int(11) NOT NULL,
   `priority` int(11) NOT NULL,
   `active` tinyint(1) NOT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `code` (`code`),
   KEY `exception_group_id` (`exception_group_id`)
@@ -2298,8 +2455,8 @@ DROP TABLE IF EXISTS `lh_generic_bot_group`;
 CREATE TABLE `lh_generic_bot_group` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `is_collapsed` int(11) NOT NULL DEFAULT 0,
-  `pos` int(11) NOT NULL DEFAULT 0,
+  `is_collapsed` int(11) NOT NULL DEFAULT '0',
+  `pos` int(11) NOT NULL DEFAULT '0',
   `bot_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `bot_id` (`bot_id`)
@@ -2312,14 +2469,14 @@ INSERT INTO `lh_generic_bot_group` (`id`, `name`, `is_collapsed`, `pos`, `bot_id
 DROP TABLE IF EXISTS `lh_generic_bot_payload`;
 CREATE TABLE `lh_generic_bot_payload` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `payload` varchar(100) NOT NULL,
   `bot_id` int(11) NOT NULL,
   `trigger_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `bot_id` (`bot_id`),
   KEY `trigger_id` (`trigger_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_pending_event`;
@@ -2329,36 +2486,37 @@ CREATE TABLE `lh_generic_bot_pending_event` (
   `trigger_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_repeat_restrict`;
 CREATE TABLE `lh_generic_bot_repeat_restrict` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `chat_id` bigint(20) NOT NULL,
-  `trigger_id` bigint(20) DEFAULT NULL,
-  `identifier` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `counter` int(11) DEFAULT 0,
-  PRIMARY KEY (`id`),
+  `trigger_id` bigint(20),
+  `identifier` varchar(20),
+  `counter` int(11) DEFAULT '0',
   KEY `chat_id_trigger_id` (`chat_id`,`trigger_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_rest_api`;
 CREATE TABLE `lh_generic_bot_rest_api` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  `id` bigint(20) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(50) NOT NULL,
+  `description` varchar(250),
+  `configuration` longtext NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_generic_bot_rest_api_cache`;
 CREATE TABLE `lh_generic_bot_rest_api_cache` (
-  `hash` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hash` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `rest_api_id` bigint(20) unsigned NOT NULL,
-  `response` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `response` text NOT NULL,
   `ctime` bigint(20) NOT NULL,
   UNIQUE KEY `rest_api_id_hash` (`rest_api_id`,`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2373,18 +2531,21 @@ CREATE TABLE `lh_generic_bot_trigger` (
   `bot_id` int(11) NOT NULL,
   `default` int(11) NOT NULL,
   `default_unknown` int(11) NOT NULL,
-  `as_argument` int(11) NOT NULL DEFAULT 0,
-  `default_unknown_btn` int(11) NOT NULL DEFAULT 0,
+  `pos` int(11) NOT NULL DEFAULT '0',
+  `as_argument` int(11) NOT NULL DEFAULT '0',
+  `in_progress` int(11) NOT NULL DEFAULT '0',
+  `default_unknown_btn` int(11) NOT NULL DEFAULT '0',
   `default_always` int(11) NOT NULL,
-  `pos` int(11) NOT NULL DEFAULT 0,
-  `in_progress` int(11) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `bot_id` (`bot_id`),
   KEY `default_unknown` (`default_unknown`),
+  KEY `in_progress` (`in_progress`),
   KEY `default_unknown_btn` (`default_unknown_btn`),
   KEY `default_always` (`default_always`),
-  KEY `group_id` (`group_id`),
-  KEY `in_progress` (`in_progress`)
+  KEY `group_id` (`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_generic_bot_trigger` (`id`, `name`, `actions`, `group_id`, `bot_id`, `default`, `default_unknown`, `as_argument`, `default_unknown_btn`, `default_always`, `pos`, `in_progress`) VALUES
@@ -2394,15 +2555,15 @@ INSERT INTO `lh_generic_bot_trigger` (`id`, `name`, `actions`, `group_id`, `bot_
 DROP TABLE IF EXISTS `lh_generic_bot_trigger_event`;
 CREATE TABLE `lh_generic_bot_trigger_event` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `pattern` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `pattern_exc` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pattern` text NOT NULL,
+  `pattern_exc` text NOT NULL,
+  `configuration` longtext NOT NULL,
   `trigger_id` bigint(20) NOT NULL,
   `bot_id` int(11) NOT NULL,
+  `skip` tinyint(1) NOT NULL DEFAULT '0',
   `on_start_type` tinyint(1) NOT NULL,
   `priority` int(11) NOT NULL,
   `type` int(11) NOT NULL,
-  `skip` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `pattern_v2` (`pattern`(191)),
   KEY `type` (`type`),
@@ -2414,8 +2575,8 @@ CREATE TABLE `lh_generic_bot_trigger_event` (
 DROP TABLE IF EXISTS `lh_generic_bot_trigger_event_template`;
 CREATE TABLE `lh_generic_bot_trigger_event_template` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `configuration` longtext NOT NULL,
+  `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2423,8 +2584,8 @@ CREATE TABLE `lh_generic_bot_trigger_event_template` (
 DROP TABLE IF EXISTS `lh_generic_bot_trigger_template`;
 CREATE TABLE `lh_generic_bot_trigger_template` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `actions` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `actions` longtext NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2432,13 +2593,16 @@ CREATE TABLE `lh_generic_bot_trigger_template` (
 DROP TABLE IF EXISTS `lh_generic_bot_tr_group`;
 CREATE TABLE `lh_generic_bot_tr_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filename` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `filepath` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nick` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bot_lang` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `use_translation_service` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `name` varchar(100) NOT NULL,
+  `bot_lang` varchar(10) NOT NULL,
+  `use_translation_service` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `filename` varchar(250) NOT NULL,
+  `filepath` varchar(250) NOT NULL,
+  `configuration` longtext NOT NULL,
+  `nick` varchar(100) NOT NULL,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `muser_id` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2447,9 +2611,9 @@ DROP TABLE IF EXISTS `lh_generic_bot_tr_item`;
 CREATE TABLE `lh_generic_bot_tr_item` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `group_id` int(11) NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `translation` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `auto_translate` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `auto_translate` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `identifier` varchar(50) NOT NULL,
+  `translation` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `identifier` (`identifier`),
   KEY `group_id` (`group_id`)
@@ -2459,12 +2623,12 @@ CREATE TABLE `lh_generic_bot_tr_item` (
 DROP TABLE IF EXISTS `lh_group`;
 CREATE TABLE `lh_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
   `disabled` tinyint(1) NOT NULL,
-  `required` tinyint(1) NOT NULL DEFAULT 0,
+  `required` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `disabled` (`disabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_group` (`id`, `name`, `disabled`, `required`) VALUES
 (1,	'Administrators',	0,	0),
@@ -2478,7 +2642,7 @@ CREATE TABLE `lh_grouprole` (
   PRIMARY KEY (`id`),
   KEY `group_id` (`role_id`,`group_id`),
   KEY `group_id_primary` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_grouprole` (`id`, `group_id`, `role_id`) VALUES
 (1,	1,	1),
@@ -2493,7 +2657,7 @@ CREATE TABLE `lh_groupuser` (
   KEY `group_id` (`group_id`),
   KEY `user_id` (`user_id`),
   KEY `group_id_2` (`group_id`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_groupuser` (`id`, `group_id`, `user_id`) VALUES
 (1,	1,	1);
@@ -2501,13 +2665,13 @@ INSERT INTO `lh_groupuser` (`id`, `group_id`, `user_id`) VALUES
 DROP TABLE IF EXISTS `lh_group_chat`;
 CREATE TABLE `lh_group_chat` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
   `status` int(11) NOT NULL,
   `time` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `chat_id` bigint(20) NOT NULL DEFAULT 0,
   `last_msg_op_id` bigint(20) NOT NULL,
-  `last_msg` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `last_msg` varchar(200) NOT NULL,
   `last_user_msg_time` int(11) NOT NULL,
   `last_msg_id` bigint(20) NOT NULL,
   `type` tinyint(1) NOT NULL DEFAULT 0,
@@ -2569,31 +2733,30 @@ CREATE TABLE `lh_group_work` (
   `group_work_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `group_id` (`group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_incoming_webhook`;
 CREATE TABLE `lh_incoming_webhook` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `dep_id` int(11) NOT NULL,
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `scope` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `disabled` tinyint(1) NOT NULL,
   `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `log_incoming` tinyint(1) unsigned NOT NULL,
-  `log_failed_parse` tinyint(1) unsigned NOT NULL,
+  `dep_id` int(11) NOT NULL,
+  `scope` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `icon` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `icon_color` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `log_incoming` tinyint(1) unsigned NOT NULL,
+  `log_failed_parse` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `identifier` (`identifier`)
+  KEY `identifier` (`identifier`,`disabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_mail_archive_range`;
 CREATE TABLE `lh_mail_archive_range` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `range_from` bigint(20) unsigned NOT NULL,
   `range_to` bigint(20) unsigned NOT NULL,
   `older_than` int(11) NOT NULL,
@@ -2601,6 +2764,7 @@ CREATE TABLE `lh_mail_archive_range` (
   `first_id` bigint(20) NOT NULL,
   `year_month` int(11) NOT NULL,
   `type` tinyint(1) unsigned NOT NULL,
+  `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2615,20 +2779,30 @@ CREATE TABLE `lh_mail_continuous_event` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `lh_mcp_session`;
+CREATE TABLE `lh_mcp_session` (
+  `session_id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `data` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ctime` int(11) unsigned NOT NULL,
+  `utime` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`session_id`),
+  KEY `utime` (`utime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `lh_msg`;
 CREATE TABLE `lh_msg` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `msg` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meta_msg` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `msg` longtext NOT NULL,
+  `meta_msg` longtext NOT NULL,
   `time` int(11) NOT NULL,
-  `chat_id` int(11) NOT NULL DEFAULT 0,
-  `user_id` int(11) NOT NULL DEFAULT 0,
-  `name_support` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `del_st` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `chat_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `del_st` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `name_support` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `chat_id_id` (`chat_id`,`id`),
+  KEY `chat_id_id` (`chat_id`, `id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_msg` (`id`, `msg`, `meta_msg`, `time`, `chat_id`, `user_id`, `name_support`, `del_st`) VALUES
 (7,	'asd',	'',	1761559888,	3,	0,	'',	0),
@@ -2835,12 +3009,12 @@ CREATE TABLE `lh_notification_subscriber` (
   `ctime` int(11) NOT NULL,
   `utime` int(11) NOT NULL,
   `status` int(11) NOT NULL,
-  `params` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `params` text NOT NULL,
   `device_type` tinyint(1) NOT NULL,
-  `subscriber_hash` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `uagent` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ip` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `last_error` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subscriber_hash` varchar(50) NOT NULL,
+  `uagent` varchar(250) NOT NULL,
+  `ip` varchar(250) NOT NULL,
+  `last_error` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`),
   KEY `dep_id` (`dep_id`),
@@ -2852,17 +3026,17 @@ CREATE TABLE `lh_notification_subscriber` (
 DROP TABLE IF EXISTS `lh_question`;
 CREATE TABLE `lh_question` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `question` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `question` varchar(250) NOT NULL,
+  `location` varchar(250) NOT NULL,
   `active` int(11) NOT NULL,
   `priority` int(11) NOT NULL,
   `is_voting` int(11) NOT NULL,
-  `question_intro` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `revote` int(11) NOT NULL DEFAULT 0,
+  `question_intro` text NOT NULL,
+  `revote` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `priority` (`priority`),
   KEY `active_priority` (`active`,`priority`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_question_answer`;
@@ -2870,23 +3044,23 @@ CREATE TABLE `lh_question_answer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` bigint(20) NOT NULL,
   `question_id` int(11) NOT NULL,
-  `answer` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `answer` text NOT NULL,
   `ctime` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ip` (`ip`),
   KEY `question_id` (`question_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_question_option`;
 CREATE TABLE `lh_question_option` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `question_id` int(11) NOT NULL,
-  `option_name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `option_name` varchar(250) NOT NULL,
   `priority` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `question_id` (`question_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_question_option_answer`;
@@ -2899,15 +3073,15 @@ CREATE TABLE `lh_question_option_answer` (
   PRIMARY KEY (`id`),
   KEY `question_id` (`question_id`),
   KEY `ip` (`ip`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_role`;
 CREATE TABLE `lh_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_role` (`id`, `name`) VALUES
 (1,	'Administrators'),
@@ -2917,13 +3091,13 @@ DROP TABLE IF EXISTS `lh_rolefunction`;
 CREATE TABLE `lh_rolefunction` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `role_id` int(11) NOT NULL,
-  `module` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `function` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `limitation` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `type` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `module` varchar(100) NOT NULL,
+  `function` varchar(100) NOT NULL,
+  `limitation` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_rolefunction` (`id`, `role_id`, `module`, `function`, `limitation`, `type`) VALUES
 (1,	1,	'*',	'*',	'',	0),
@@ -2988,19 +3162,19 @@ CREATE TABLE `lh_speech_chat_language` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `chat_id` int(11) NOT NULL,
   `language_id` int(11) NOT NULL,
-  `dialect` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dialect` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chat_id` (`chat_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_speech_language`;
 CREATE TABLE `lh_speech_language` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `siteaccess` varchar(3) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `name` varchar(100) NOT NULL,
+  `siteaccess` varchar(3) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_speech_language` (`id`, `name`, `siteaccess`) VALUES
 (1,	'Afrikaans',	''),
@@ -3075,14 +3249,14 @@ DROP TABLE IF EXISTS `lh_speech_language_dialect`;
 CREATE TABLE `lh_speech_language_dialect` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `language_id` int(11) NOT NULL,
-  `lang_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `lang_code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `short_code` varchar(4) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `lang_name` varchar(100) NOT NULL,
+  `lang_code` varchar(100) NOT NULL,
+  `short_code` varchar(4) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `language_id` (`language_id`),
   KEY `short_code` (`short_code`),
   KEY `lang_code` (`lang_code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_speech_language_dialect` (`id`, `language_id`, `lang_name`, `lang_code`, `short_code`) VALUES
 (1,	1,	'Afrikaans',	'af-ZA',	'af'),
@@ -3248,10 +3422,10 @@ DROP TABLE IF EXISTS `lh_speech_user_language`;
 CREATE TABLE `lh_speech_user_language` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
-  `language` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `language` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id_language` (`user_id`,`language`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_transfer`;
@@ -3261,8 +3435,8 @@ CREATE TABLE `lh_transfer` (
   `dep_id` int(11) NOT NULL,
   `transfer_user_id` int(11) NOT NULL,
   `from_dep_id` int(11) NOT NULL,
-  `ctime` int(11) NOT NULL,
   `transfer_to_user_id` int(11) NOT NULL,
+  `ctime` int(11) NOT NULL,
   `transfer_scope` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`),
@@ -3278,35 +3452,35 @@ CREATE TABLE `lh_userdep` (
   `user_id` int(11) NOT NULL,
   `dep_id` int(11) NOT NULL,
   `last_activity` int(11) NOT NULL,
-  `lastd_activity` int(11) NOT NULL DEFAULT 0,
-  `exclude_autoasign` tinyint(1) NOT NULL DEFAULT 0,
   `hide_online` int(11) NOT NULL,
   `last_accepted` int(11) NOT NULL DEFAULT 0,
   `active_chats` int(11) NOT NULL DEFAULT 0,
+  `type` int(11) NOT NULL DEFAULT 0,
+  `dep_group_id` int(11) NOT NULL DEFAULT 0,
+  `hide_online_ts` int(11) NOT NULL DEFAULT 0,
   `pending_chats` int(11) NOT NULL DEFAULT 0,
   `inactive_chats` int(11) NOT NULL DEFAULT 0,
   `max_chats` int(11) NOT NULL DEFAULT 0,
-  `type` int(11) NOT NULL DEFAULT 0,
+  `exclude_autoasign` tinyint(1) NOT NULL DEFAULT 0,
+  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `ro` tinyint(1) NOT NULL DEFAULT 0,
-  `hide_online_ts` int(11) NOT NULL DEFAULT 0,
-  `dep_group_id` int(11) NOT NULL DEFAULT 0,
   `always_on` tinyint(1) NOT NULL DEFAULT 0,
-  `exclude_autoasign_mails` tinyint(1) NOT NULL DEFAULT 0,
+  `lastd_activity` int(11) NOT NULL DEFAULT 0,
   `exc_indv_autoasign` tinyint(1) NOT NULL DEFAULT 0,
-  `last_accepted_mail` int(11) NOT NULL DEFAULT 0,
+  `exclude_autoasign_mails` tinyint(1) NOT NULL DEFAULT 0,
   `active_mails` int(11) NOT NULL DEFAULT 0,
   `pending_mails` int(11) NOT NULL DEFAULT 0,
   `max_mails` int(11) NOT NULL DEFAULT 0,
+  `last_accepted_mail` int(11) NOT NULL DEFAULT 0,
   `assign_priority` int(11) NOT NULL DEFAULT 0,
   `chat_max_priority` int(11) NOT NULL DEFAULT 0,
   `chat_min_priority` int(11) NOT NULL DEFAULT 0,
-  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `chat_min_priority_std` int(11) NOT NULL DEFAULT 0,
   `chat_max_priority_std` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `last_activity_hide_online_dep_id` (`last_activity`,`hide_online`,`dep_id`),
   KEY `dep_id` (`dep_id`),
   KEY `user_id_type` (`user_id`,`type`),
+  KEY `last_activity_hide_online_dep_id` (`last_activity`,`hide_online`,`dep_id`),
   KEY `online_op_widget_2` (`dep_id`,`last_activity`,`user_id`),
   KEY `online_op_widget_3` (`user_id`,`active_chats`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3319,12 +3493,12 @@ CREATE TABLE `lh_userdep_alias` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `dep_id` bigint(20) unsigned NOT NULL,
   `dep_group_id` bigint(20) unsigned NOT NULL,
-  `job_title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint(20) unsigned NOT NULL,
   `nick` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `filepath` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `filename` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `avatar` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `job_title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `dep_id_user_id` (`dep_id`,`user_id`),
   KEY `dep_group_id_user_id` (`dep_group_id`,`user_id`)
@@ -3359,7 +3533,9 @@ CREATE TABLE `lh_userdep_disabled` (
   `assign_priority` int(11) NOT NULL DEFAULT 0,
   `chat_max_priority` int(11) NOT NULL DEFAULT 0,
   `chat_min_priority` int(11) NOT NULL DEFAULT 0,
-  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `only_priority` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `chat_min_priority_std` int(11) NOT NULL DEFAULT 0,
+  `chat_max_priority_std` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `dep_id` (`dep_id`),
   KEY `user_id_type` (`user_id`,`type`),
@@ -3397,27 +3573,27 @@ CREATE TABLE `lh_users` (
   `rec_per_req` tinyint(1) NOT NULL,
   `auto_accept` tinyint(1) NOT NULL,
   `max_active_chats` int(11) NOT NULL,
-  `cache_version` int(11) unsigned NOT NULL DEFAULT 0,
+  `cache_version` int(11) unsigned NOT NULL DEFAULT '0',
   `pswd_updated` int(11) NOT NULL,
   `attr_int_1` int(11) NOT NULL,
   `attr_int_2` int(11) NOT NULL,
   `attr_int_3` int(11) NOT NULL,
-  `force_logout` tinyint(1) unsigned NOT NULL DEFAULT 0,
-  `llogin` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `always_on` tinyint(1) NOT NULL DEFAULT 0,
-  `exclude_autoasign_mails` tinyint(1) NOT NULL DEFAULT 0,
-  `max_active_mails` int(11) NOT NULL DEFAULT 0,
-  `offline_reason_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `team_lead_user_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `force_logout` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `offline_reason_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `team_lead_user_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `llogin` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `always_on` tinyint(1) NOT NULL DEFAULT '0',
+  `exclude_autoasign_mails` tinyint(1) NOT NULL DEFAULT '0',
+  `max_active_mails` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `hide_online` (`hide_online`),
   KEY `rec_per_req` (`rec_per_req`),
   KEY `disabled` (`disabled`),
   KEY `email` (`email`),
-  KEY `xmpp_username` (`xmpp_username`(191)),
   KEY `username` (`username`),
-  KEY `team_lead_user_id` (`team_lead_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `team_lead_user_id` (`team_lead_user_id`),
+  KEY `xmpp_username` (`xmpp_username`(191))
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_users` (`id`, `username`, `password`, `email`, `time_zone`, `name`, `surname`, `filepath`, `filename`, `job_title`, `departments_ids`, `chat_nickname`, `xmpp_username`, `session_id`, `avatar`, `operation_admin`, `skype`, `exclude_autoasign`, `disabled`, `hide_online`, `all_departments`, `invisible_mode`, `inactive_mode`, `rec_per_req`, `auto_accept`, `max_active_chats`, `cache_version`, `pswd_updated`, `attr_int_1`, `attr_int_2`, `attr_int_3`, `force_logout`, `llogin`, `always_on`, `exclude_autoasign_mails`, `max_active_mails`, `offline_reason_id`, `team_lead_user_id`) VALUES
 (1,	'admin',	'$2y$10$EXAMPLE.HASH.PLACEHOLDER.CHANGE.IN.PRODUCTION',	'admin@example.com',	'',	'Remi',	'Kimi',	'var/userphoto/2022y/01/01/1/',	'ad5e293b9db6191f696b1c519e93f1af.png',	'',	'0',	'',	'',	'',	'',	'',	'',	0,	0,	0,	1,	0,	0,	0,	0,	0,	3,	1641021220,	0,	0,	0,	0,	1791875107,	1,	0,	0,	0,	0);
@@ -3429,7 +3605,7 @@ CREATE TABLE `lh_users_login` (
   `type` int(11) NOT NULL,
   `ctime` bigint(20) NOT NULL,
   `status` int(11) NOT NULL,
-  `ip` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip` varchar(100) NOT NULL,
   `msg` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id_type` (`user_id`,`type`)
@@ -3477,11 +3653,16 @@ CREATE TABLE `lh_users_online_session` (
   `time` int(11) NOT NULL,
   `duration` int(11) NOT NULL,
   `lactivity` int(11) NOT NULL,
-  `type` tinyint(1) NOT NULL DEFAULT 0,
+  `type` tinyint(1) NOT NULL DEFAULT '0',
+  `offline_reason_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `online_reason_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `updated_by_user_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `online_by_user_id` int(11) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `user_id_lactivity` (`user_id`,`lactivity`),
+  KEY `user_id_lactivity` (`user_id`, `lactivity`),
+  KEY `user_id_time` (`user_id`, `time`),
   KEY `lactivity` (`lactivity`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_users_online_session` (`id`, `user_id`, `time`, `duration`, `lactivity`, `type`) VALUES
 (1,	1,	1641021227,	10480,	1641031707,	0),
@@ -3557,7 +3738,7 @@ CREATE TABLE `lh_users_remember` (
   `user_id` int(11) NOT NULL,
   `mtime` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `lh_users_session`;
@@ -3584,11 +3765,11 @@ DROP TABLE IF EXISTS `lh_users_setting`;
 CREATE TABLE `lh_users_setting` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `value` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`,`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_users_setting` (`id`, `user_id`, `identifier`, `value`) VALUES
 (1,	1,	'user_language',	'en_EN'),
@@ -3659,11 +3840,11 @@ INSERT INTO `lh_users_setting` (`id`, `user_id`, `identifier`, `value`) VALUES
 
 DROP TABLE IF EXISTS `lh_users_setting_option`;
 CREATE TABLE `lh_users_setting_option` (
-  `identifier` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `class` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attribute` varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `identifier` varchar(50) NOT NULL,
+  `class` varchar(50) NOT NULL,
+  `attribute` varchar(40) NOT NULL,
   PRIMARY KEY (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `lh_users_setting_option` (`identifier`, `class`, `attribute`) VALUES
 ('chat_message',	'',	''),
@@ -3688,17 +3869,17 @@ INSERT INTO `lh_users_setting_option` (`identifier`, `class`, `attribute`) VALUE
 DROP TABLE IF EXISTS `lh_webhook`;
 CREATE TABLE `lh_webhook` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `event` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bot_id_alt` int(11) NOT NULL DEFAULT 0,
-  `trigger_id_alt` int(11) NOT NULL DEFAULT 0,
+  `name` varchar(50) NOT NULL,
+  `event` varchar(50) NOT NULL,
+  `delay` int(11) NOT NULL DEFAULT '0',
+  `bot_id_alt` int(11) NOT NULL DEFAULT '0',
+  `trigger_id_alt` int(11) NOT NULL DEFAULT '0',
   `bot_id` int(11) NOT NULL,
   `trigger_id` int(11) NOT NULL,
   `disabled` tinyint(1) NOT NULL,
-  `configuration` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` longtext NOT NULL,
+  `configuration` longtext NOT NULL,
   `type` tinyint(1) NOT NULL DEFAULT 0,
-  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `delay` int(11) NOT NULL DEFAULT 0,
-  `status` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `event_disabled` (`event`,`disabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
