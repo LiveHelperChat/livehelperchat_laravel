@@ -122,7 +122,7 @@ jobs:
       - name: Update database from production
         run: |
           cd public
-          php cron.php -s site_admin -c cron/util/update_database
+          php cron.php -s site_admin -c cron/util/update_database -p local
 
       - name: Execute tests
         run: php artisan test
@@ -254,7 +254,7 @@ jobs:
       - name: Update database from production
         run: |
           cd public
-          php cron.php -s site_admin -c cron/util/update_database
+          php cron.php -s site_admin -c cron/util/update_database  -p local
 
       - name: Provision the admin operator (admin/admin)
         run: php artisan lhc:admin admin admin
