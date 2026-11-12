@@ -21,7 +21,7 @@ test.describe('Login page', () => {
         ).toBeVisible();
         await expect(page.locator('input[name="Username"]')).toBeVisible();
         await expect(page.locator('input[name="Password"]')).toBeVisible();
-        await expect(page.locator('input[name="Login"]')).toBeVisible();
+        await expect(page.locator('button[name="Login"]')).toBeVisible();
     });
 
     test('signs in with valid credentials', async ({ page }) => {
@@ -34,7 +34,7 @@ test.describe('Login page', () => {
 
         await page.locator('input[name="Username"]').fill(username ?? '');
         await page.locator('input[name="Password"]').fill(password ?? '');
-        await page.locator('input[name="Login"]').click();
+        await page.locator('button[name="Login"]').click();
 
         // A successful login leaves the login page behind.
         await expect(
@@ -47,7 +47,7 @@ test.describe('Login page', () => {
 
         await page.locator('input[name="Username"]').fill('lhc_e2e_no_such_user');
         await page.locator('input[name="Password"]').fill('definitely-wrong-password');
-        await page.locator('input[name="Login"]').click();
+        await page.locator('button[name="Login"]').click();
 
         // A failed login re-renders the form with an error message.
         await expect(
