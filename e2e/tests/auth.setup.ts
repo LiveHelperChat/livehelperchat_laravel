@@ -30,7 +30,7 @@ setup('authenticate as admin', async ({ page }) => {
 
     await page.locator('input[name="Username"]').fill(username);
     await page.locator('input[name="Password"]').fill(password);
-    await page.locator('input[name="Login"]').click();
+    await page.locator('button[name="Login"]').click();
 
     // A failed login stays on /user/login and keeps showing the heading.
     await expect(
